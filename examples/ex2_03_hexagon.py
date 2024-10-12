@@ -20,6 +20,7 @@ if package_dir not in sys.path:
     sys.path.insert(0, package_dir)
 
 from core.utils import Utils
+from core.attribute import Attribute
 
 class GLWidget(qgl.QGLWidget):
 
@@ -49,43 +50,44 @@ class GLWidget(qgl.QGLWidget):
         GL.glDepthFunc(GL.GL_LESS)
         GL.glEnable(GL.GL_CULL_FACE)
 
-        # vertex shader code
-        # note that the version starts with //
+        # Initialize program #
         vs_code = """
             // version %d%d0
-                         
+            in vec3 position;
             void main()
             {
-                gl_Position = vec4(0.0, 0.0, 0.0, 1.0);
+                gl_Position = vec4(position.x, position.y, position.z, 1.0);
             }
         """
-        
-        # fragment shader code
         fs_code = """
             // version %d%d0
-                         
             out vec4 fragColor;
             void main()
             {
                 fragColor = vec4(1.0, 1.0, 0.0, 1.0);
             }
         """
-        
-        # Send code to GPU and compile; store program reference
         self.program_ref = Utils.initialize_program(vs_code, fs_code)
-
+        # Render settings (optional) #
+        # on Mac, only 1px line is allowed
+        GL.glLineWidth(1)
         # Set up vertex array object #
         vao_ref = GL.glGenVertexArrays(1)
         GL.glBindVertexArray(vao_ref)
-        # render settings (optional) #
-        # Set point width and height
-        GL.glPointSize(10)
+        # Set up vertex attribute #
+        position_data = [[ 0.8,  0.0,  0.0],
+                         [ 0.4,  0.6,  0.0],
+                         [-0.4,  0.6,  0.0],
+                         [-0.8,  0.0,  0.0],
+                         [-0.4, -0.6,  0.0],
+                         [ 0.4, -0.6,  0.0]]
+        self.vertex_count = len(position_data)
+        position_attribute = Attribute('vec3', position_data)
+        position_attribute.associate_variable(self.program_ref, 'position')
 
     def paintGL(self):
-        # Select program to use when rendering
         GL.glUseProgram(self.program_ref)
-        # Renders geometric objects using selected program
-        GL.glDrawArrays(GL.GL_POINTS, 0, 1)
+        GL.glDrawArrays(GL.GL_TRIANGLE_FAN, 0, self.vertex_count)
 
     # def resizeGL(self, w, h):
     #     pass

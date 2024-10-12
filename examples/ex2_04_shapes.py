@@ -20,6 +20,7 @@ if package_dir not in sys.path:
     sys.path.insert(0, package_dir)
 
 from core.utils import Utils
+from core.attribute import Attribute
 
 class GLWidget(qgl.QGLWidget):
 
@@ -49,43 +50,54 @@ class GLWidget(qgl.QGLWidget):
         GL.glDepthFunc(GL.GL_LESS)
         GL.glEnable(GL.GL_CULL_FACE)
 
-        # vertex shader code
-        # note that the version starts with //
         vs_code = """
             // version %d%d0
-                         
+            in vec3 position;
             void main()
             {
-                gl_Position = vec4(0.0, 0.0, 0.0, 1.0);
+                gl_Position = vec4(position.x, position.y, position.z, 1.0);
             }
         """
-        
-        # fragment shader code
         fs_code = """
             // version %d%d0
-                         
             out vec4 fragColor;
             void main()
             {
                 fragColor = vec4(1.0, 1.0, 0.0, 1.0);
             }
         """
-        
-        # Send code to GPU and compile; store program reference
         self.program_ref = Utils.initialize_program(vs_code, fs_code)
-
-        # Set up vertex array object #
-        vao_ref = GL.glGenVertexArrays(1)
-        GL.glBindVertexArray(vao_ref)
-        # render settings (optional) #
-        # Set point width and height
-        GL.glPointSize(10)
+        # render settings #
+        GL.glLineWidth(1)
+        # Set up vertex array object - triangle #
+        self.vao_triangle = GL.glGenVertexArrays(1)
+        GL.glBindVertexArray(self.vao_triangle)
+        position_data_triangle = [[-0.5,  0.8,  0.0],
+                                  [-0.2,  0.2,  0.0],
+                                  [-0.8,  0.2,  0.0]]
+        self.vertex_count_triangle = len(position_data_triangle)
+        position_attribute_triangle = Attribute('vec3', position_data_triangle)
+        position_attribute_triangle.associate_variable(self.program_ref, 'position')
+        # Set up vertex array object - square #
+        self.vao_square = GL.glGenVertexArrays(1)
+        GL.glBindVertexArray(self.vao_square)
+        position_data_square = [[0.8, 0.8, 0.0],
+                                [0.8, 0.2, 0.0],
+                                [0.2, 0.2, 0.0],
+                                [0.2, 0.8, 0.0]]
+        self.vertex_count_square = len(position_data_square)
+        position_attribute_square = Attribute('vec3', position_data_square)
+        position_attribute_square.associate_variable(self.program_ref, 'position')
 
     def paintGL(self):
-        # Select program to use when rendering
+        # Using same program to render both shapes
         GL.glUseProgram(self.program_ref)
-        # Renders geometric objects using selected program
-        GL.glDrawArrays(GL.GL_POINTS, 0, 1)
+        # Draw the triangle
+        GL.glBindVertexArray(self.vao_triangle)
+        GL.glDrawArrays(GL.GL_LINE_LOOP, 0, self.vertex_count_triangle)
+        # Draw the square
+        GL.glBindVertexArray(self.vao_square)
+        GL.glDrawArrays(GL.GL_LINE_LOOP, 0, self.vertex_count_square)
 
     # def resizeGL(self, w, h):
     #     pass

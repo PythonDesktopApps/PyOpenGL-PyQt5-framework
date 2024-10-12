@@ -51,8 +51,12 @@ class Utils:
 
     @staticmethod
     def initialize_program(vertex_shader_code, fragment_shader_code):
-        vertex_shader_ref = Utils.initialize_shader(vertex_shader_code, GL.GL_VERTEX_SHADER)
-        fragment_shader_ref = Utils.initialize_shader(fragment_shader_code, GL.GL_FRAGMENT_SHADER)
+        major = GL.glGetInteger(GL.GL_MAJOR_VERSION)
+        minor = GL.glGetInteger(GL.GL_MINOR_VERSION)
+
+        print("test vertex code: ", vertex_shader_code % (major, minor))
+        vertex_shader_ref = Utils.initialize_shader(vertex_shader_code % (major, minor), GL.GL_VERTEX_SHADER)
+        fragment_shader_ref = Utils.initialize_shader(fragment_shader_code % (major, minor), GL.GL_FRAGMENT_SHADER)
         # Create empty program object and store reference to it
         program_ref = GL.glCreateProgram()
         # Attach previously compiled shader programs
