@@ -77,13 +77,21 @@ class GLWidget(qgl.QGLWidget):
         GL.glPointSize(10)
 
     def paintGL(self):
+        self.clear()
         # Select program to use when rendering
         GL.glUseProgram(self.program_ref)
         # Renders geometric objects using selected program
         GL.glDrawArrays(GL.GL_POINTS, 0, 1)
+        self.update()
 
     # def resizeGL(self, w, h):
     #     pass
+    def clear(self):
+        # Clearing the screen (color like Qt window)
+        # GL.glClearColor(0.94117647058, 0.94117647058, 0.94117647058, 1.0)
+        # color it white for better visibility
+        GL.glClearColor(255, 255, 255, 1)
+        GL.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT)
 
 class MainWindow(qtw.QMainWindow):
 

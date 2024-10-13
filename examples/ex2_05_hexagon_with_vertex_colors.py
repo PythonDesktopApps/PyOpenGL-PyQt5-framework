@@ -96,13 +96,21 @@ class GLWidget(qgl.QGLWidget):
         color_attribute.associate_variable(self.program_ref, 'vertexColor')
 
     def paintGL(self):
+        self.clear()
         GL.glUseProgram(self.program_ref)
         # GL.glDrawArrays(GL.GL_POINTS, 0, self.vertex_count)
         # GL.glDrawArrays(GL.GL_LINE_LOOP, 0, self.vertex_count)
         GL.glDrawArrays(GL.GL_TRIANGLE_FAN, 0, self.vertex_count)
+        self.update()
 
     # def resizeGL(self, w, h):
     #     pass
+    def clear(self):
+        # Clearing the screen (color like Qt window)
+        # GL.glClearColor(0.94117647058, 0.94117647058, 0.94117647058, 1.0)
+        # color it white for better visibility
+        GL.glClearColor(255, 255, 255, 1)
+        GL.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT)
 
 class MainWindow(qtw.QMainWindow):
 

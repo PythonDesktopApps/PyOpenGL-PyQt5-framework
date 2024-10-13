@@ -21,6 +21,7 @@ if package_dir not in sys.path:
 
 from core.utils import Utils
 from core.attribute import Attribute
+from core.uniform import Uniform
 
 class GLWidget(qgl.QGLWidget):
 
@@ -52,58 +53,65 @@ class GLWidget(qgl.QGLWidget):
 
         vs_code = """
             in vec3 position;
+            uniform vec3 translation;
             void main()
             {
-                gl_Position = vec4(position.x, position.y, position.z, 1.0);
+                vec3 pos = position + translation;
+                gl_Position = vec4(pos.x, pos.y, pos.z, 1.0);
             }
         """
         fs_code = """
+            uniform vec3 baseColor;
             out vec4 fragColor;
             void main()
             {
-                fragColor = vec4(1.0, 1.0, 0.0, 1.0);
+                fragColor = vec4(baseColor.r, baseColor.g, baseColor.b, 1.0);
             }
         """
         self.program_ref = Utils.initialize_program(vs_code, fs_code)
-        # render settings #
-        GL.glLineWidth(1)
-        # Set up vertex array object - triangle #
-        self.vao_triangle = GL.glGenVertexArrays(1)
-        GL.glBindVertexArray(self.vao_triangle)
-        position_data_triangle = [[-0.5,  0.8,  0.0],
-                                  [-0.2,  0.2,  0.0],
-                                  [-0.8,  0.2,  0.0]]
-        self.vertex_count_triangle = len(position_data_triangle)
-        position_attribute_triangle = Attribute('vec3', position_data_triangle)
-        position_attribute_triangle.associate_variable(self.program_ref, 'position')
-        # Set up vertex array object - square #
-        self.vao_square = GL.glGenVertexArrays(1)
-        GL.glBindVertexArray(self.vao_square)
-        position_data_square = [[0.8, 0.8, 0.0],
-                                [0.8, 0.2, 0.0],
-                                [0.2, 0.2, 0.0],
-                                [0.2, 0.8, 0.0]]
-        self.vertex_count_square = len(position_data_square)
-        position_attribute_square = Attribute('vec3', position_data_square)
-        position_attribute_square.associate_variable(self.program_ref, 'position')
+        # render settings (optional) #
+        # Specify color used when clearly
+        GL.glClearColor(0.0, 0.0, 0.0, 1.0)
+        # Set up vertex array object #
+        vao_ref = GL.glGenVertexArrays(1)
+        GL.glBindVertexArray(vao_ref)
+        # Set up vertex attribute #
+        position_data = [[ 0.0,  0.2,  0.0],
+                         [ 0.2, -0.2,  0.0],
+                         [-0.2, -0.2,  0.0]]
+        self.vertex_count = len(position_data)
+        position_attribute = Attribute('vec3', position_data)
+        position_attribute.associate_variable(self.program_ref, 'position')
+        # Set up uniforms #
+        self.translation = Uniform('vec3', [-0.5, 0.0, 0.0])
+        self.translation.locate_variable(self.program_ref, 'translation')
+        self.base_color = Uniform('vec3', [1.0, 0.0, 0.0])
+        self.base_color.locate_variable(self.program_ref, 'baseColor')
 
     def paintGL(self):
         self.clear()
-        # Using same program to render both shapes
+        
+        """ Update data """
+        # Increase x coordinate of translation
+        self.translation.data[0] += 0.01
+        # If triangle passes off-screen on the right,
+        # change translation, so it reappears on the left
+        if self.translation.data[0] > 1.2:
+            self.translation.data[0] = -1.2
+        # Render scene #
+        # Reset color buffer with specified color
+        GL.glClear(GL.GL_COLOR_BUFFER_BIT)
         GL.glUseProgram(self.program_ref)
-        # Draw the triangle
-        GL.glBindVertexArray(self.vao_triangle)
-        GL.glDrawArrays(GL.GL_LINE_LOOP, 0, self.vertex_count_triangle)
-        # Draw the square
-        GL.glBindVertexArray(self.vao_square)
-        GL.glDrawArrays(GL.GL_LINE_LOOP, 0, self.vertex_count_square)
+        self.translation.upload_data()
+        self.base_color.upload_data()
+        GL.glDrawArrays(GL.GL_TRIANGLES, 0, self.vertex_count)
+
         self.update()
 
     # def resizeGL(self, w, h):
     #     pass
+
     def clear(self):
-        # Clearing the screen (color like Qt window)
-        # GL.glClearColor(0.94117647058, 0.94117647058, 0.94117647058, 1.0)
         # color it white for better visibility
         GL.glClearColor(255, 255, 255, 1)
         GL.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT)

@@ -53,11 +53,19 @@ class GLWidget(qgl.QGLWidget):
         # widgets - example only
         # angle = self.parent.spb_angle.value() # int [-80: 80]
 
+    def paintGL(self):
+        self.clear()
+        self.update()
+
     # def resizeGL(self, w, h):
     #     pass
 
-    # def paintGL(self):
-    #     pass
+    def clear(self):
+        # Clearing the screen (color like Qt window)
+        # GL.glClearColor(0.94117647058, 0.94117647058, 0.94117647058, 1.0)
+        # color it white for better visibility
+        GL.glClearColor(255, 255, 255, 1)
+        GL.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT)
         
 class MainWindow(qtw.QMainWindow):
 

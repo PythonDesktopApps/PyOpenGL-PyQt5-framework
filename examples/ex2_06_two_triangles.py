@@ -69,7 +69,6 @@ class GLWidget(qgl.QGLWidget):
                 fragColor = vec4(baseColor.r, baseColor.g, baseColor.b, 1.0);
             }
         """
-        print("fuck")
         self.program_ref = Utils.initialize_program(vs_code, fs_code)
         # Set up vertex array object #
         vao_ref = GL.glGenVertexArrays(1)
@@ -91,7 +90,6 @@ class GLWidget(qgl.QGLWidget):
         self.base_color1.locate_variable(self.program_ref, 'baseColor')
         self.base_color2 = Uniform('vec3', [0.0, 0.0, 1.0])
         self.base_color2.locate_variable(self.program_ref, 'baseColor')
-        print("fuck")
 
     def paintGL(self):
         self.clear()
@@ -111,8 +109,8 @@ class GLWidget(qgl.QGLWidget):
     #     pass
 
     def clear(self):
-        # Clearing the screen (color like Qt window)
-        GL.glClearColor(0.94117647058, 0.94117647058, 0.94117647058, 1.0)
+        # color it white for better visibility
+        GL.glClearColor(255, 255, 255, 1)
         GL.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT)
 
 class MainWindow(qtw.QMainWindow):
