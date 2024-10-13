@@ -52,7 +52,6 @@ class GLWidget(qgl.QGLWidget):
 
         # Initialize program #
         vs_code = """
-            // version %d%d0
             in vec3 position;
             in vec3 vertexColor;
             out vec3 color;
@@ -63,7 +62,6 @@ class GLWidget(qgl.QGLWidget):
             }
         """
         fs_code = """
-            // version %d%d0
             in vec3 color;
             out vec4 fragColor;
             void main()

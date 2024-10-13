@@ -50,10 +50,7 @@ class GLWidget(qgl.QGLWidget):
         GL.glEnable(GL.GL_CULL_FACE)
 
         # vertex shader code
-        # note that the version starts with //
         vs_code = """
-            // version %d%d0
-                         
             void main()
             {
                 gl_Position = vec4(0.0, 0.0, 0.0, 1.0);
@@ -62,8 +59,6 @@ class GLWidget(qgl.QGLWidget):
         
         # fragment shader code
         fs_code = """
-            // version %d%d0
-                         
             out vec4 fragColor;
             void main()
             {

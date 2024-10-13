@@ -52,7 +52,6 @@ class GLWidget(qgl.QGLWidget):
         GL.glEnable(GL.GL_CULL_FACE)
 
         vs_code = """
-            // version %d%d0
             in vec3 position;
             uniform vec3 translation;
             void main()
@@ -63,7 +62,6 @@ class GLWidget(qgl.QGLWidget):
         """
 
         fs_code = """
-            // version %d%d0
             uniform vec3 baseColor;
             out vec4 fragColor;
             void main()
@@ -71,7 +69,7 @@ class GLWidget(qgl.QGLWidget):
                 fragColor = vec4(baseColor.r, baseColor.g, baseColor.b, 1.0);
             }
         """
-
+        print("fuck")
         self.program_ref = Utils.initialize_program(vs_code, fs_code)
         # Set up vertex array object #
         vao_ref = GL.glGenVertexArrays(1)
@@ -89,12 +87,14 @@ class GLWidget(qgl.QGLWidget):
         self.translation1.locate_variable(self.program_ref, 'translation')
         self.translation2 = Uniform('vec3', [0.5, 0.0, 0.0])
         self.translation2.locate_variable(self.program_ref, 'translation')
-        self.base_color1 = Uniform('vec3', [1.0, 0.0, 0.0])
+        self.base_color1 = Uniform('vec3', [0.0, 1.0, 0.0])
         self.base_color1.locate_variable(self.program_ref, 'baseColor')
         self.base_color2 = Uniform('vec3', [0.0, 0.0, 1.0])
         self.base_color2.locate_variable(self.program_ref, 'baseColor')
+        print("fuck")
 
     def paintGL(self):
+        self.clear()
         GL.glUseProgram(self.program_ref)
         # Draw the first triangle
         self.translation1.upload_data()
@@ -105,8 +105,15 @@ class GLWidget(qgl.QGLWidget):
         self.base_color2.upload_data()
         GL.glDrawArrays(GL.GL_TRIANGLES, 0, self.vertex_count)
 
+        self.update()
+
     # def resizeGL(self, w, h):
     #     pass
+
+    def clear(self):
+        # Clearing the screen (color like Qt window)
+        GL.glClearColor(0.94117647058, 0.94117647058, 0.94117647058, 1.0)
+        GL.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT)
 
 class MainWindow(qtw.QMainWindow):
 
