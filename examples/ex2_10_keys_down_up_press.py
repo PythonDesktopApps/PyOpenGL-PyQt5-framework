@@ -1,4 +1,3 @@
-import math
 import time
 import sys
 from pathlib import Path
@@ -21,8 +20,6 @@ if package_dir not in sys.path:
     sys.path.insert(0, package_dir)
 
 from core.utils import Utils
-from core.attribute import Attribute
-from core.uniform import Uniform
 
 class GLWidget(qgl.QGLWidget):
 
@@ -40,7 +37,6 @@ class GLWidget(qgl.QGLWidget):
         self.click_time = time.time()
         self.x = 0
         self.y = 0
-        self.time = 0
 
 
     def initializeGL(self):
@@ -49,57 +45,11 @@ class GLWidget(qgl.QGLWidget):
 
         self.gl_settings()
 
-        vs_code = """
-            in vec3 position;
-            uniform vec3 translation;
-            void main()
-            {
-                vec3 pos = position + translation;
-                gl_Position = vec4(pos.x, pos.y, pos.z, 1.0);
-            }
-        """
-        fs_code = """
-            uniform vec3 baseColor;
-            out vec4 fragColor;
-            void main()
-            {
-                fragColor = vec4(baseColor.r, baseColor.g, baseColor.b, 1.0);
-            }
-        """
-        self.program_ref = Utils.initialize_program(vs_code, fs_code)
-        # render settings (optional) #
-        # Specify color used when clearly
-        GL.glClearColor(0.0, 0.0, 0.0, 1.0)
-        # Set up vertex array object #
-        vao_ref = GL.glGenVertexArrays(1)
-        GL.glBindVertexArray(vao_ref)
-        # Set up vertex attribute #
-        position_data = [[ 0.0,  0.2,  0.0],
-                         [ 0.2, -0.2,  0.0],
-                         [-0.2, -0.2,  0.0]]
-        self.vertex_count = len(position_data)
-        position_attribute = Attribute('vec3', position_data)
-        position_attribute.associate_variable(self.program_ref, 'position')
-        # Set up uniforms #
-        self.translation = Uniform('vec3', [-0.5, 0.0, 0.0])
-        self.translation.locate_variable(self.program_ref, 'translation')
-        self.base_color = Uniform('vec3', [1.0, 0.0, 0.0])
-        self.base_color.locate_variable(self.program_ref, 'baseColor')
+        # widgets - example only
+        # angle = self.parent.spb_angle.value() # int [-80: 80]
 
     def paintGL(self):
         self.clear()
-        
-        # self.base_color.data[0] = (math.sin(3 * self.time) + 1) / 2
-        self.base_color.data[0] = (math.sin(self.time) + 1) / 2
-        self.base_color.data[1] = (math.sin(self.time + 2.1) + 1) / 2
-        self.base_color.data[2] = (math.sin(self.time + 4.2) + 1) / 2
-        # Reset color buffer with specified color
-        GL.glClear(GL.GL_COLOR_BUFFER_BIT)
-        GL.glUseProgram(self.program_ref)
-        self.translation.upload_data()
-        self.base_color.upload_data()
-        GL.glDrawArrays(GL.GL_TRIANGLES, 0, self.vertex_count)
-
         self.update()
 
     # def resizeGL(self, w, h):
@@ -115,10 +65,12 @@ class GLWidget(qgl.QGLWidget):
         # GL.glEnable(GL.GL_CULL_FACE)
 
     def clear(self):
+        # Clearing the screen (color like Qt window)
+        # GL.glClearColor(0.94117647058, 0.94117647058, 0.94117647058, 1.0)
         # color it white for better visibility
         GL.glClearColor(255, 255, 255, 1)
         GL.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT)
-
+        
 class MainWindow(qtw.QMainWindow):
 
     def __init__(self, *args):
@@ -157,14 +109,16 @@ class MainWindow(qtw.QMainWindow):
         # self.btn_open_close_joint = self.findChild(qtw.QPushButton, "btn_open_close_joint")
 
     
-    @pyqtSlot()
-    def open_close_joint(self):
-        pass
-    
     def keyPressEvent(self, e):
-        pass
-        # if e.key() == qtc.Qt.Key_Shift:
-        #     self.glWidget.joint_type.mesh.select.shift = True
+        # Space key not recognize - research more
+        if e.key() == qtc.Qt.Key_Shift:
+            print("Shift key is pressed")
+
+        if e.key() == qtc.Qt.Key_Right:
+            print("Right arrow is pressed")
+
+        else:
+            print(e.text(), "is pressed")
     
 # deal with dpi
 qtw.QApplication.setAttribute(qtc.Qt.AA_EnableHighDpiScaling, True)     # enable high dpi scaling

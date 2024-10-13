@@ -67,7 +67,7 @@ class GLWidget(qgl.QGLWidget):
             }
         """
         self.program_ref = Utils.initialize_program(vs_code, fs_code)
-        # render settings (optional) #
+        # Render settings (optional) #
         # Specify color used when clearly
         GL.glClearColor(0.0, 0.0, 0.0, 1.0)
         # Set up vertex array object #
@@ -89,10 +89,8 @@ class GLWidget(qgl.QGLWidget):
     def paintGL(self):
         self.clear()
         
-        # self.base_color.data[0] = (math.sin(3 * self.time) + 1) / 2
-        self.base_color.data[0] = (math.sin(self.time) + 1) / 2
-        self.base_color.data[1] = (math.sin(self.time + 2.1) + 1) / 2
-        self.base_color.data[2] = (math.sin(self.time + 4.2) + 1) / 2
+        self.translation.data[0] = 0.75 * math.cos(self.time)
+        self.translation.data[1] = 0.75 * math.sin(self.time)
         # Reset color buffer with specified color
         GL.glClear(GL.GL_COLOR_BUFFER_BIT)
         GL.glUseProgram(self.program_ref)

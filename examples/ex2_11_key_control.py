@@ -49,6 +49,7 @@ class GLWidget(qgl.QGLWidget):
 
         self.gl_settings()
 
+        # Initialize program #
         vs_code = """
             in vec3 position;
             uniform vec3 translation;
@@ -85,14 +86,12 @@ class GLWidget(qgl.QGLWidget):
         self.translation.locate_variable(self.program_ref, 'translation')
         self.base_color = Uniform('vec3', [1.0, 0.0, 0.0])
         self.base_color.locate_variable(self.program_ref, 'baseColor')
+        # triangle speed, units per second
+        self.speed = 0.5
 
     def paintGL(self):
         self.clear()
         
-        # self.base_color.data[0] = (math.sin(3 * self.time) + 1) / 2
-        self.base_color.data[0] = (math.sin(self.time) + 1) / 2
-        self.base_color.data[1] = (math.sin(self.time + 2.1) + 1) / 2
-        self.base_color.data[2] = (math.sin(self.time + 4.2) + 1) / 2
         # Reset color buffer with specified color
         GL.glClear(GL.GL_COLOR_BUFFER_BIT)
         GL.glUseProgram(self.program_ref)
@@ -161,10 +160,19 @@ class MainWindow(qtw.QMainWindow):
     def open_close_joint(self):
         pass
     
+    # key events only work on the main window class
     def keyPressEvent(self, e):
-        pass
-        # if e.key() == qtc.Qt.Key_Shift:
-        #     self.glWidget.joint_type.mesh.select.shift = True
+        # 0.15 is arbitrary
+        distance = 0.015
+        if e.key() == qtc.Qt.Key_Left:
+            self.glWidget.translation.data[0] -= distance
+        if e.key() == qtc.Qt.Key_Right:
+            self.glWidget.translation.data[0] += distance
+        # Key down not working
+        if e.key() == qtc.Qt.Key_Down:
+            self.glWidget.translation.data[1]  -= distance
+        if e.key() == qtc.Qt.Key_Up:
+            self.glWidget.translation.data[1]  += distance
     
 # deal with dpi
 qtw.QApplication.setAttribute(qtc.Qt.AA_EnableHighDpiScaling, True)     # enable high dpi scaling
