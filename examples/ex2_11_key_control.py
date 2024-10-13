@@ -99,8 +99,6 @@ class GLWidget(qgl.QGLWidget):
         self.base_color.upload_data()
         GL.glDrawArrays(GL.GL_TRIANGLES, 0, self.vertex_count)
 
-        self.update()
-
     # def resizeGL(self, w, h):
     #     pass
 
@@ -140,10 +138,8 @@ class MainWindow(qtw.QMainWindow):
         self.statusBar.showMessage(
             "To open and close the joint: PRESS 'Open/close joint' button or DOUBLE-CLICK anywhere inside the window.")
 
-        # timer = qtc.QTimer(self)
-        # timer.setInterval(20)  # period, in milliseconds
-        # timer.timeout.connect(self.glWidget.updateGL)
-        # timer.start()
+        # self.timer = qtc.QElapsedTimer()
+        # self.timer.start()
 
     def setupUi(self):
         pass
@@ -162,8 +158,11 @@ class MainWindow(qtw.QMainWindow):
     
     # key events only work on the main window class
     def keyPressEvent(self, e):
-        # 0.15 is arbitrary
-        distance = 0.015
+        # elapsed_time = self.timer.elapsed()
+        # print(elapsed_time)
+        # the ideal way is to use the elapsed time
+        distance = self.glWidget.speed * 0.05
+
         if e.key() == qtc.Qt.Key_Left:
             self.glWidget.translation.data[0] -= distance
         if e.key() == qtc.Qt.Key_Right:
@@ -173,6 +172,9 @@ class MainWindow(qtw.QMainWindow):
             self.glWidget.translation.data[1]  -= distance
         if e.key() == qtc.Qt.Key_Up:
             self.glWidget.translation.data[1]  += distance
+
+        # updateGL is used if you redraw the GLWidget - useful when responding to events
+        self.glWidget.updateGL()
     
 # deal with dpi
 qtw.QApplication.setAttribute(qtc.Qt.AA_EnableHighDpiScaling, True)     # enable high dpi scaling

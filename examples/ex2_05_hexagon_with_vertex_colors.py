@@ -97,8 +97,7 @@ class GLWidget(qgl.QGLWidget):
         # GL.glDrawArrays(GL.GL_POINTS, 0, self.vertex_count)
         # GL.glDrawArrays(GL.GL_LINE_LOOP, 0, self.vertex_count)
         GL.glDrawArrays(GL.GL_TRIANGLE_FAN, 0, self.vertex_count)
-        self.update()
-
+        
     # def resizeGL(self, w, h):
     #     pass
     def gl_settings(self):

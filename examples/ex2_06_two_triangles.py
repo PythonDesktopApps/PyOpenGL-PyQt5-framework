@@ -100,8 +100,6 @@ class GLWidget(qgl.QGLWidget):
         self.base_color2.upload_data()
         GL.glDrawArrays(GL.GL_TRIANGLES, 0, self.vertex_count)
 
-        self.update()
-
     # def resizeGL(self, w, h):
     #     pass
 

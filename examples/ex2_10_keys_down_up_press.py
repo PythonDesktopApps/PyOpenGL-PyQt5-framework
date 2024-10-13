@@ -50,7 +50,6 @@ class GLWidget(qgl.QGLWidget):
 
     def paintGL(self):
         self.clear()
-        self.update()
 
     # def resizeGL(self, w, h):
     #     pass

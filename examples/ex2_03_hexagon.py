@@ -83,7 +83,6 @@ class GLWidget(qgl.QGLWidget):
         self.clear()
         GL.glUseProgram(self.program_ref)
         GL.glDrawArrays(GL.GL_TRIANGLE_FAN, 0, self.vertex_count)
-        self.update()
         
     # def resizeGL(self, w, h):
     #     pass

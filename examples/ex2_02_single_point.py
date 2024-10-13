@@ -78,7 +78,6 @@ class GLWidget(qgl.QGLWidget):
         GL.glUseProgram(self.program_ref)
         # Renders geometric objects using selected program
         GL.glDrawArrays(GL.GL_POINTS, 0, 1)
-        self.update()
 
     # def resizeGL(self, w, h):
     #     pass

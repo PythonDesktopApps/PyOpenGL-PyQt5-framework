@@ -93,8 +93,7 @@ class GLWidget(qgl.QGLWidget):
         # Draw the square
         GL.glBindVertexArray(self.vao_square)
         GL.glDrawArrays(GL.GL_LINE_LOOP, 0, self.vertex_count_square)
-        self.update()
-
+        
     # def resizeGL(self, w, h):
     #     pass
 
