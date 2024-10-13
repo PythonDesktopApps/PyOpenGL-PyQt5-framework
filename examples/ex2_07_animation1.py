@@ -45,11 +45,7 @@ class GLWidget(qgl.QGLWidget):
         # print gl info
         Utils.print_system_info()
 
-        # self.qglClearColor(qtg.QColor(255, 255, 255))
-        GL.glClearColor(255, 255, 255, 1)
-        GL.glEnable(GL.GL_DEPTH_TEST)
-        GL.glDepthFunc(GL.GL_LESS)
-        GL.glEnable(GL.GL_CULL_FACE)
+        self.gl_settings()
 
         vs_code = """
             in vec3 position;
@@ -77,8 +73,8 @@ class GLWidget(qgl.QGLWidget):
         GL.glBindVertexArray(vao_ref)
         # Set up vertex attribute #
         position_data = [[ 0.0,  0.2,  0.0],
-                         [ 0.2, -0.2,  0.0],
-                         [-0.2, -0.2,  0.0]]
+                            [ 0.2, -0.2,  0.0],
+                            [-0.2, -0.2,  0.0]]
         self.vertex_count = len(position_data)
         position_attribute = Attribute('vec3', position_data)
         position_attribute.associate_variable(self.program_ref, 'position')
@@ -91,7 +87,6 @@ class GLWidget(qgl.QGLWidget):
     def paintGL(self):
         self.clear()
         
-        """ Update data """
         # Increase x coordinate of translation
         self.translation.data[0] += 0.01
         # If triangle passes off-screen on the right,
@@ -110,6 +105,15 @@ class GLWidget(qgl.QGLWidget):
 
     # def resizeGL(self, w, h):
     #     pass
+
+    def gl_settings(self):
+        # self.qglClearColor(qtg.QColor(255, 255, 255))
+        GL.glClearColor(255, 255, 255, 1)
+        GL.glEnable(GL.GL_DEPTH_TEST)
+        GL.glDepthFunc(GL.GL_LESS)
+        # the shapes are basically behind the white background
+        # if you enabled face culling, they will not show
+        # GL.glEnable(GL.GL_CULL_FACE)
 
     def clear(self):
         # color it white for better visibility

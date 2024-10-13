@@ -45,11 +45,7 @@ class GLWidget(qgl.QGLWidget):
         # print gl info
         Utils.print_system_info()
 
-        # self.qglClearColor(qtg.QColor(255, 255, 255))
-        GL.glClearColor(255, 255, 255, 1)
-        GL.glEnable(GL.GL_DEPTH_TEST)
-        GL.glDepthFunc(GL.GL_LESS)
-        GL.glEnable(GL.GL_CULL_FACE)
+        self.gl_settings()
 
         vs_code = """
             in vec3 position;
@@ -69,6 +65,7 @@ class GLWidget(qgl.QGLWidget):
                 fragColor = vec4(baseColor.r, baseColor.g, baseColor.b, 1.0);
             }
         """
+
         self.program_ref = Utils.initialize_program(vs_code, fs_code)
         # Set up vertex array object #
         vao_ref = GL.glGenVertexArrays(1)
@@ -108,6 +105,15 @@ class GLWidget(qgl.QGLWidget):
     # def resizeGL(self, w, h):
     #     pass
 
+    def gl_settings(self):
+        # self.qglClearColor(qtg.QColor(255, 255, 255))
+        GL.glClearColor(255, 255, 255, 1)
+        GL.glEnable(GL.GL_DEPTH_TEST)
+        GL.glDepthFunc(GL.GL_LESS)
+        # the shapes are basically behind the white background
+        # if you enabled face culling, they will not show
+        # GL.glEnable(GL.GL_CULL_FACE)
+        
     def clear(self):
         # color it white for better visibility
         GL.glClearColor(255, 255, 255, 1)

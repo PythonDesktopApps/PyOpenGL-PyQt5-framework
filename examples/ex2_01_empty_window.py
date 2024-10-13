@@ -43,12 +43,7 @@ class GLWidget(qgl.QGLWidget):
         # print gl info
         Utils.print_system_info()
 
-        # self.qglClearColor(qtg.QColor(255, 255, 255))
-        GL.glClearColor(255, 255, 255, 1)
-        GL.glEnable(GL.GL_DEPTH_TEST)
-        GL.glDepthFunc(GL.GL_LESS)
-        # do not enable, will make the model see-through
-        # glEnable(GL_CULL_FACE)
+        self.gl_settings()
 
         # widgets - example only
         # angle = self.parent.spb_angle.value() # int [-80: 80]
@@ -59,6 +54,15 @@ class GLWidget(qgl.QGLWidget):
 
     # def resizeGL(self, w, h):
     #     pass
+
+    def gl_settings(self):
+        # self.qglClearColor(qtg.QColor(255, 255, 255))
+        GL.glClearColor(255, 255, 255, 1)
+        GL.glEnable(GL.GL_DEPTH_TEST)
+        GL.glDepthFunc(GL.GL_LESS)
+        # the shapes are basically behind the white background
+        # if you enabled face culling, they will not show
+        # GL.glEnable(GL.GL_CULL_FACE)
 
     def clear(self):
         # Clearing the screen (color like Qt window)

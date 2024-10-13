@@ -28,12 +28,18 @@ class Attribute:
         # Select buffer used by the following functions
         GL.glBindBuffer(GL.GL_ARRAY_BUFFER, self._buffer_ref)
         # Store data in currently bound buffer
-        GL.glBufferData(GL.GL_ARRAY_BUFFER, data.ravel(), GL.GL_STATIC_DRAW)
+        size_in_bytes = int(data.size * 32/8)
+        # print(size_in_bytes)
+        # print(type(data.ravel()))
+        GL.glBufferData(GL.GL_ARRAY_BUFFER, data.nbytes, data.ravel(), GL.GL_STATIC_DRAW)
 
     def associate_variable(self, program_ref, variable_name):
         """ Associate variable in program with the buffer """
         # Get reference for program variable with given name
         variable_ref = GL.glGetAttribLocation(program_ref, variable_name)
+        
+        # variable_ref is an integer
+        # print("var_ref: ", variable_ref)
         # If the program does not reference the variable, then exit
         if variable_ref != -1:
             # Select buffer used by the following functions
