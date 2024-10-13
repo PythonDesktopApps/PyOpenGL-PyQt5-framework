@@ -217,6 +217,7 @@ class MainWindow(qtw.QMainWindow):
             m = Matrix.make_rotation_z(-turn_amount)
             self.glWidget.model_matrix.data = self.glWidget.model_matrix.data @ m
 
+        # use update() when using QOpenGLWidget
         self.glWidget.updateGL()
     
 # deal with dpi
