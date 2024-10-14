@@ -17,6 +17,8 @@ class PointMaterial(BasicMaterial):
     def update_render_settings(self):
         GL.glPointSize(self._setting_dict["pointSize"])
         if self._setting_dict["roundedPoints"]:
+            # https://mcfletch.github.io/pyopengl/documentation/manual/glEnable.html
+            # GL_POINT_SMOOTH is not a valid GL constant under CoreProfile
             GL.glEnable(GL.GL_POINT_SMOOTH)
         else:
             GL.glDisable(GL.GL_POINT_SMOOTH)
