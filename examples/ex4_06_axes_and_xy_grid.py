@@ -42,8 +42,6 @@ class GLWidget(qgl.QGLWidget):
         self.parent = main_window
         # self.setMinimumSize(800, 800)
         self.setMouseTracking(True)
-        # user input
-        self.input = Input()
 
     def initializeGL(self):
         # print gl info
@@ -52,12 +50,12 @@ class GLWidget(qgl.QGLWidget):
         self.gl_settings()
 
         self.renderer = Renderer(self)
-        self.scene = Scene()
+        # self.scene = Scene()
         self.camera = Camera(aspect_ratio=800/600)
-        self.rig = MovementRig()
-        self.rig.add(self.camera)
-        self.rig.set_position([0.5, 1, 5])
-        self.scene.add(self.rig)
+        # self.rig = MovementRig()
+        # self.rig.add(self.camera)
+        # self.rig.set_position([0.5, 1, 5])
+        # self.scene.add(self.rig)
         axes = AxesHelper(axis_length=2)
         self.scene.add(axes)
         grid = GridHelper(
@@ -71,8 +69,6 @@ class GLWidget(qgl.QGLWidget):
     def paintGL(self):
         # since the update for this is not triggered by some external event (e.i mouseclick)
         # then we trigger the updateGL in the mainWindow
-        # Still to fix
-        self.rig.update(self.input, self.delta_time)
         self.renderer.render(self.scene, self.camera)
 
     def gl_settings(self):
@@ -111,12 +107,15 @@ class MainWindow(qtw.QMainWindow):
         self.statusBar.showMessage(
             "To open and close the joint: PRESS 'Open/close joint' button or DOUBLE-CLICK anywhere inside the window.")
 
+        self.units_per_second = 1
+        self.degrees_per_second = 60
+
         # since we dont have events to trigger updateGL
         # we can use time interval to do it
-        timer = qtc.QTimer(self)
-        timer.setInterval(10)  # period, in milliseconds
-        timer.timeout.connect(self.glWidget.updateGL)
-        timer.start()
+        # timer = qtc.QTimer(self)
+        # timer.setInterval(10)  # period, in milliseconds
+        # timer.timeout.connect(self.glWidget.updateGL)
+        # timer.start()
 
     def setupUi(self):
         pass
@@ -128,9 +127,24 @@ class MainWindow(qtw.QMainWindow):
         # ---Design
         # self.btn_open_close_joint = self.findChild(qtw.QPushButton, "btn_open_close_joint")
 
-    
-    def keyPressEvent(self, e):
-        pass
+    # Qt can access keyboard events only if any of its top level window has keyboard focus.
+    # If the window is minimized or another window takes focus, you will not receive keyboard events.
+    # def keyPressEvent(self, e):
+    #     move_amount = self.units_per_second * 0.05
+    #     rotate_amount = self.degrees_per_second * (math.pi / 180) * 0.05
+        
+    #     key_pressed = e.text()
+    #     if key_pressed == "w":
+            
+    #     if key_pressed == "s":
+    #     if key_pressed == "a":
+    #     if key_pressed == "d":
+    #     if key_pressed == "r":
+    #     if key_pressed == "f":
+    #     if key_pressed == "q":
+    #     if key_pressed == "e":
+    #     if key_pressed == "t":
+    #     if key_pressed == "g":
     
 # deal with dpi
 qtw.QApplication.setAttribute(qtc.Qt.AA_EnableHighDpiScaling, True)     # enable high dpi scaling
