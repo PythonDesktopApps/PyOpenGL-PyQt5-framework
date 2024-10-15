@@ -15,5 +15,8 @@ Note that the root is added to path to easily run the examples.
 
 ## TODO
 
-* `ex4_07_box_on_grid.py`
-* `ex5_03_rippling_effect_in_texture.py`
+* `ex4_07`
+* `ex5_03`
+* `ex5_07`
+* `ex5_08`
+* `ex5_09`
