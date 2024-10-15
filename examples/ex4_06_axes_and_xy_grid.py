@@ -50,12 +50,14 @@ class GLWidget(qgl.QGLWidget):
         self.gl_settings()
 
         self.renderer = Renderer(self)
-        # self.scene = Scene()
+        self.scene = Scene()
         self.camera = Camera(aspect_ratio=800/600)
+        # think of rig as movement of viewport
         # self.rig = MovementRig()
         # self.rig.add(self.camera)
         # self.rig.set_position([0.5, 1, 5])
-        # self.scene.add(self.rig)
+        self.camera.set_position([0.5, 1, 5])
+        self.scene.add(self.camera)
         axes = AxesHelper(axis_length=2)
         self.scene.add(axes)
         grid = GridHelper(
@@ -129,22 +131,46 @@ class MainWindow(qtw.QMainWindow):
 
     # Qt can access keyboard events only if any of its top level window has keyboard focus.
     # If the window is minimized or another window takes focus, you will not receive keyboard events.
-    # def keyPressEvent(self, e):
-    #     move_amount = self.units_per_second * 0.05
-    #     rotate_amount = self.degrees_per_second * (math.pi / 180) * 0.05
-        
-    #     key_pressed = e.text()
-    #     if key_pressed == "w":
-            
-    #     if key_pressed == "s":
-    #     if key_pressed == "a":
-    #     if key_pressed == "d":
-    #     if key_pressed == "r":
-    #     if key_pressed == "f":
-    #     if key_pressed == "q":
-    #     if key_pressed == "e":
-    #     if key_pressed == "t":
-    #     if key_pressed == "g":
+    def keyPressEvent(self, e):
+        move_amount = self.units_per_second * 0.05
+        rotate_amount = self.degrees_per_second * (math.pi / 180) * 0.05
+
+        # move_forwards: "w",
+        # move_backwards: "s",
+        # move_left: "a",
+        # move_right: "d",
+        # move_up: "r",
+        # move_down: "f",
+        # turn_left: "q",
+        # turn_right: "e",
+        # look_up: "t",
+        # look_down: "g"
+
+        key_pressed = e.text()
+        if key_pressed == "w":
+            self.glWidget.camera.translate(0, 0, -move_amount)
+        if key_pressed == "s":
+            self.glWidget.camera.translate(0, 0, move_amount)
+        if key_pressed == "a":
+            self.glWidget.camera.translate(-move_amount, 0, 0)
+        if key_pressed == "d":
+            self.glWidget.camera.translate(move_amount, 0, 0)
+        if key_pressed == "r":
+            self.glWidget.camera.translate(0, move_amount, 0)
+        if key_pressed == "f":
+            self.glWidget.camera.translate(0, -move_amount, 0)
+        if key_pressed == "q":
+            self.glWidget.camera.rotate_y(-rotate_amount)
+        if key_pressed == "e":
+            self.glWidget.camera.rotate_y(rotate_amount)
+
+        # TODO: why is the old code using _look_attachment
+        if key_pressed == "t":
+            self.glWidget.camera.rotate_x(rotate_amount)
+        if key_pressed == "g":
+            self.glWidget.camera.rotate_x(-rotate_amount)
+
+        self.glWidget.updateGL()
     
 # deal with dpi
 qtw.QApplication.setAttribute(qtc.Qt.AA_EnableHighDpiScaling, True)     # enable high dpi scaling
