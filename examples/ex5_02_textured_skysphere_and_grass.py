@@ -25,9 +25,12 @@ from core_ext.camera import Camera
 from core_ext.mesh import Mesh
 from core_ext.renderer import Renderer
 from core_ext.scene import Scene
-from extras.axes import AxesHelper
-from extras.grid import GridHelper
+from core_ext.texture import Texture
+from geometry.rectangle import RectangleGeometry
+from geometry.sphere import SphereGeometry
+from material.texture import TextureMaterial
 from extras.movement_rig import MovementRig
+
 
 class GLWidget(qgl.QGLWidget):
 
@@ -52,21 +55,22 @@ class GLWidget(qgl.QGLWidget):
         self.renderer = Renderer(self)
         self.scene = Scene()
         self.camera = Camera(aspect_ratio=800/600)
-        # think of rig as movement of camera
         # self.rig = MovementRig()
         # self.rig.add(self.camera)
-        # self.rig.set_position([0.5, 1, 5])
-        self.camera.set_position([0.5, 1, 5])
+        self.camera.set_position([0, 1, 4])
         self.scene.add(self.camera)
-        axes = AxesHelper(axis_length=2)
-        self.scene.add(axes)
-        grid = GridHelper(
-            size=20,
-            grid_color=[1, 1, 1],
-            center_color=[1, 1, 0]
+        sky_geometry = SphereGeometry(radius=50)
+        sky_material = TextureMaterial(texture=Texture(file_name="images/sky.jpg"))
+        sky = Mesh(sky_geometry, sky_material)
+        self.scene.add(sky)
+        grass_geometry = RectangleGeometry(width=100, height=100)
+        grass_material = TextureMaterial(
+            texture=Texture(file_name="images/grass.jpg"),
+            property_dict={"repeatUV": [50, 50]}
         )
-        grid.rotate_x(-math.pi / 2)
-        self.scene.add(grid)
+        grass = Mesh(grass_geometry, grass_material)
+        grass.rotate_x(-math.pi/2)
+        self.scene.add(grass)
 
     def paintGL(self):
         # since the update for this is not triggered by some external event (e.i mouseclick)

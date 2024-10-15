@@ -25,9 +25,11 @@ from core_ext.camera import Camera
 from core_ext.mesh import Mesh
 from core_ext.renderer import Renderer
 from core_ext.scene import Scene
+from geometry.box import BoxGeometry
 from extras.axes import AxesHelper
 from extras.grid import GridHelper
-from extras.movement_rig import MovementRig
+from material.surface import SurfaceMaterial
+
 
 class GLWidget(qgl.QGLWidget):
 
@@ -52,11 +54,14 @@ class GLWidget(qgl.QGLWidget):
         self.renderer = Renderer(self)
         self.scene = Scene()
         self.camera = Camera(aspect_ratio=800/600)
-        # think of rig as movement of camera
-        # self.rig = MovementRig()
-        # self.rig.add(self.camera)
-        # self.rig.set_position([0.5, 1, 5])
-        self.camera.set_position([0.5, 1, 5])
+        geometry = BoxGeometry()
+        material = SurfaceMaterial(property_dict={"useVertexColors": True})
+        self.mesh = Mesh(geometry, material)
+        # note that since I don't have the rig, camera is parent of the mesh
+        self.camera.add(self.mesh)
+        self.camera.set_position([0, 1, 5])
+        # the effect will be cumulative
+        # self.camera.set_position([0.5, 1, 5])
         self.scene.add(self.camera)
         axes = AxesHelper(axis_length=2)
         self.scene.add(axes)
