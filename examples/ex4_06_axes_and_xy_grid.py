@@ -132,8 +132,9 @@ class MainWindow(qtw.QMainWindow):
     # Qt can access keyboard events only if any of its top level window has keyboard focus.
     # If the window is minimized or another window takes focus, you will not receive keyboard events.
     def keyPressEvent(self, e):
-        move_amount = self.units_per_second * 0.05
-        rotate_amount = self.degrees_per_second * (math.pi / 180) * 0.05
+        dt = 0.05
+        move_amount = self.units_per_second * dt
+        rotate_amount = self.degrees_per_second * (math.pi / 180) * dt
 
         # move_forwards: "w",
         # move_backwards: "s",
@@ -170,7 +171,7 @@ class MainWindow(qtw.QMainWindow):
         if key_pressed == "g":
             self.glWidget.camera.rotate_x(-rotate_amount)
 
-        self.glWidget.updateGL()
+        self.glWidget.update()
     
 # deal with dpi
 qtw.QApplication.setAttribute(qtc.Qt.AA_EnableHighDpiScaling, True)     # enable high dpi scaling

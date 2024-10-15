@@ -155,9 +155,11 @@ class MainWindow(qtw.QMainWindow):
         
         # move_speed and turn_speed are glWidget property hence they remain there
         # however keyPress are recognized only on the mainWindow hence used here
-        move_amount = self.glWidget.move_speed * 0.05
-        turn_amount = self.glWidget.turn_speed * 0.05
-        print(move_amount)
+
+        dt = 0.05
+        move_amount = self.glWidget.move_speed * dt
+        turn_amount = self.glWidget.turn_speed * dt
+
         key_pressed = e.text()
         # @ acts as matrix multiplication when applied to matrices
         # but acts as dot product when applied to vectors
@@ -213,7 +215,7 @@ class MainWindow(qtw.QMainWindow):
             self.glWidget.model_matrix.data = self.glWidget.model_matrix.data @ m
 
         # use update() when using QOpenGLWidget
-        self.glWidget.updateGL()
+        self.glWidget.update()
     
 # deal with dpi
 qtw.QApplication.setAttribute(qtc.Qt.AA_EnableHighDpiScaling, True)     # enable high dpi scaling

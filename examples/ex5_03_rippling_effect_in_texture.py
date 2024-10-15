@@ -29,7 +29,6 @@ from core_ext.texture import Texture
 from geometry.rectangle import RectangleGeometry
 from material.material import Material
 
-
 class GLWidget(qgl.QGLWidget):
 
     def __init__(self, main_window=None, *__args):
@@ -43,7 +42,8 @@ class GLWidget(qgl.QGLWidget):
         self.parent = main_window
         # self.setMinimumSize(800, 800)
         self.setMouseTracking(True)
-        self.delta_time = 0.05
+
+        self.lastTime = time.time()
 
     def initializeGL(self):
         # print gl info
@@ -88,10 +88,17 @@ class GLWidget(qgl.QGLWidget):
         self.wave_material.locate_uniforms()
 
     def paintGL(self):
-        # since the update for this is not triggered by some external event (e.i mouseclick)
-        # then we trigger the updateGL in the mainWindow
-        self.wave_material.uniform_dict["time"].data += self.delta_time
+        self.clear()
+
+        # Time update
+        now = time.time()
+        dt = now - self.lastTime
+        self.lastTime = now
+
+        self.wave_material.uniform_dict["time"].data += dt
         self.renderer.render(self.scene, self.camera)
+
+        self.update()
 
     def gl_settings(self):
         # self.qglClearColor(qtg.QColor(255, 255, 255))
@@ -129,15 +136,11 @@ class MainWindow(qtw.QMainWindow):
         self.statusBar.showMessage(
             "To open and close the joint: PRESS 'Open/close joint' button or DOUBLE-CLICK anywhere inside the window.")
 
-        self.units_per_second = 1
-        self.degrees_per_second = 60
-
-        # since we dont have events to trigger updateGL
-        # we can use time interval to do it
-        timer = qtc.QTimer(self)
-        timer.setInterval(10)  # period, in milliseconds
-        timer.timeout.connect(self.glWidget.updateGL)
-        timer.start()
+        # specify refresh rate instead of relying on PyQt default refresh
+        # timer = qtc.QTimer(self)
+        # timer.setInterval(10)  # period, in milliseconds
+        # timer.timeout.connect(self.glWidget.update)
+        # timer.start()
 
     def setupUi(self):
         pass

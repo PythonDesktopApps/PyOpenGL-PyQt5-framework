@@ -37,11 +37,10 @@ class GLWidget(qgl.QGLWidget):
         self.parent = main_window
         # self.setMinimumSize(800, 800)
         self.setMouseTracking(True)
-        self.click_time = time.time()
-        self.x = 0
-        self.y = 0
-        self.time = 0
-
+        self.lastTime = time.time()
+        # since time elapsed is cumulative, we make it a class attribute
+        # so we can increment it
+        self.time_elapsed = 0
 
     def initializeGL(self):
         # print gl info
@@ -88,15 +87,24 @@ class GLWidget(qgl.QGLWidget):
 
     def paintGL(self):
         self.clear()
-        
-        self.translation.data[0] = 0.75 * math.cos(self.time)
-        self.translation.data[1] = 0.75 * math.sin(self.time)
+
+        # Time update
+        # delta time is the time between cycles in the main window loop
+        # time_elapsed is the time since the app is running
+        now = time.time()
+        self.time_elapsed += now - self.lastTime
+        self.lastTime = now
+
+        self.translation.data[0] = 0.75 * math.cos(self.time_elapsed)
+        self.translation.data[1] = 0.75 * math.sin(self.time_elapsed)
         # Reset color buffer with specified color
         GL.glClear(GL.GL_COLOR_BUFFER_BIT)
         GL.glUseProgram(self.program_ref)
         self.translation.upload_data()
         self.base_color.upload_data()
         GL.glDrawArrays(GL.GL_TRIANGLES, 0, self.vertex_count)
+        
+        self.update()
 
     # def resizeGL(self, w, h):
     #     pass

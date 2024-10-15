@@ -37,10 +37,8 @@ class GLWidget(qgl.QGLWidget):
         self.parent = main_window
         # self.setMinimumSize(800, 800)
         self.setMouseTracking(True)
-        self.click_time = time.time()
-        self.x = 0
-        self.y = 0
-        self.time = 0
+        self.lastTime = time.time()
+        self.time_elapsed = 0
 
 
     def initializeGL(self):
@@ -89,16 +87,21 @@ class GLWidget(qgl.QGLWidget):
     def paintGL(self):
         self.clear()
         
+        now = time.time()
+        self.time_elapsed += now - self.lastTime
+        self.lastTime = now
+
         # self.base_color.data[0] = (math.sin(3 * self.time) + 1) / 2
-        self.base_color.data[0] = (math.sin(self.time) + 1) / 2
-        self.base_color.data[1] = (math.sin(self.time + 2.1) + 1) / 2
-        self.base_color.data[2] = (math.sin(self.time + 4.2) + 1) / 2
+        self.base_color.data[0] = (math.sin(self.time_elapsed) + 1) / 2
+        self.base_color.data[1] = (math.sin(self.time_elapsed + 2.1) + 1) / 2
+        self.base_color.data[2] = (math.sin(self.time_elapsed + 4.2) + 1) / 2
         # Reset color buffer with specified color
         GL.glClear(GL.GL_COLOR_BUFFER_BIT)
         GL.glUseProgram(self.program_ref)
         self.translation.upload_data()
         self.base_color.upload_data()
         GL.glDrawArrays(GL.GL_TRIANGLES, 0, self.vertex_count)
+        self.update()
 
     # def resizeGL(self, w, h):
     #     pass

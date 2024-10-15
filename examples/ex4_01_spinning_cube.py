@@ -71,6 +71,10 @@ class GLWidget(qgl.QGLWidget):
         self.mesh.rotate_x(0.01337)
         self.renderer.render(self.scene, self.camera)
 
+        # PyQt refresh rate is > 60 Hz. If you use update here
+        # the cube will rotate too fast
+        # self.update()
+
     def gl_settings(self):
         # self.qglClearColor(qtg.QColor(255, 255, 255))
         GL.glClearColor(255, 255, 255, 1)
@@ -111,7 +115,7 @@ class MainWindow(qtw.QMainWindow):
         # we can use time interval to do it
         timer = qtc.QTimer(self)
         timer.setInterval(10)  # period, in milliseconds
-        timer.timeout.connect(self.glWidget.updateGL)
+        timer.timeout.connect(self.glWidget.update)
         timer.start()
 
     def setupUi(self):

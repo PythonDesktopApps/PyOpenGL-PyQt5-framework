@@ -130,7 +130,7 @@ class MainWindow(qtw.QMainWindow):
         # we can use time interval to do it
         timer = qtc.QTimer(self)
         timer.setInterval(10)  # period, in milliseconds
-        timer.timeout.connect(self.glWidget.updateGL)
+        timer.timeout.connect(self.glWidget.update)
         timer.start()
 
     def setupUi(self):

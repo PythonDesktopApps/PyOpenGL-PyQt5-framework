@@ -108,10 +108,11 @@ class MainWindow(qtw.QMainWindow):
         self.statusBar.showMessage(
             "To open and close the joint: PRESS 'Open/close joint' button or DOUBLE-CLICK anywhere inside the window.")
 
-        # timer = qtc.QTimer(self)
-        # timer.setInterval(20)  # period, in milliseconds
-        # timer.timeout.connect(self.glWidget.updateGL)
-        # timer.start()
+        # specify refresh rate instead of relying on PyQt default refresh
+        timer = qtc.QTimer(self)
+        timer.setInterval(20)  # period, in milliseconds
+        timer.timeout.connect(self.glWidget.update)
+        timer.start()
 
     def setupUi(self):
         pass

@@ -37,11 +37,6 @@ class GLWidget(qgl.QGLWidget):
         self.parent = main_window
         # self.setMinimumSize(800, 800)
         self.setMouseTracking(True)
-        self.click_time = time.time()
-        self.x = 0
-        self.y = 0
-        self.time = 0
-
 
     def initializeGL(self):
         # print gl info
@@ -91,7 +86,7 @@ class GLWidget(qgl.QGLWidget):
 
     def paintGL(self):
         self.clear()
-        
+
         # Reset color buffer with specified color
         GL.glClear(GL.GL_COLOR_BUFFER_BIT)
         GL.glUseProgram(self.program_ref)
@@ -138,9 +133,6 @@ class MainWindow(qtw.QMainWindow):
         self.statusBar.showMessage(
             "To open and close the joint: PRESS 'Open/close joint' button or DOUBLE-CLICK anywhere inside the window.")
 
-        # self.timer = qtc.QElapsedTimer()
-        # self.timer.start()
-
     def setupUi(self):
         pass
         # get opengl window size - not really needed
@@ -158,10 +150,13 @@ class MainWindow(qtw.QMainWindow):
     
     # key events only work on the main window class
     def keyPressEvent(self, e):
-        # elapsed_time = self.timer.elapsed()
-        # print(elapsed_time)
-        # the ideal way is to use the elapsed time
-        distance = self.glWidget.speed * 0.05
+
+        # the original framework using PyGame have delta_time of 0.016
+        # because the refresh rate is at 60 Hz (1/60 = 0.016)
+
+        # to mimic that here, let's use delta time of 0.05
+        dt = 0.05
+        distance = self.glWidget.speed * dt
 
         if e.key() == qtc.Qt.Key_Left:
             self.glWidget.translation.data[0] -= distance
@@ -174,7 +169,7 @@ class MainWindow(qtw.QMainWindow):
             self.glWidget.translation.data[1]  += distance
 
         # updateGL is used if you redraw the GLWidget - useful when responding to events
-        self.glWidget.updateGL()
+        self.glWidget.update()
     
 # deal with dpi
 qtw.QApplication.setAttribute(qtc.Qt.AA_EnableHighDpiScaling, True)     # enable high dpi scaling

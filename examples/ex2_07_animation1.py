@@ -36,9 +36,6 @@ class GLWidget(qgl.QGLWidget):
         self.parent = main_window
         # self.setMinimumSize(800, 800)
         self.setMouseTracking(True)
-        self.click_time = time.time()
-        self.x = 0
-        self.y = 0
 
 
     def initializeGL(self):
@@ -100,6 +97,7 @@ class GLWidget(qgl.QGLWidget):
         self.translation.upload_data()
         self.base_color.upload_data()
         GL.glDrawArrays(GL.GL_TRIANGLES, 0, self.vertex_count)
+        self.update()
 
     # def resizeGL(self, w, h):
     #     pass

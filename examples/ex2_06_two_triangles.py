@@ -36,10 +36,6 @@ class GLWidget(qgl.QGLWidget):
         self.parent = main_window
         # self.setMinimumSize(800, 800)
         self.setMouseTracking(True)
-        self.click_time = time.time()
-        self.x = 0
-        self.y = 0
-
 
     def initializeGL(self):
         # print gl info
