@@ -21,10 +21,13 @@ if package_dir not in sys.path:
     sys.path.insert(0, package_dir)
 
 from core.utils import Utils
+from core.matrix import Matrix
 from core_ext.camera import Camera
 from core_ext.mesh import Mesh
 from core_ext.renderer import Renderer
 from core_ext.scene import Scene
+from core_ext.texture import Texture
+from geometry.box import BoxGeometry
 from geometry.rectangle import RectangleGeometry
 from extras.text_texture import TextTexture
 from material.texture import TextureMaterial
@@ -54,80 +57,34 @@ class GLWidget(qgl.QGLWidget):
 
         self.renderer = Renderer(self)
         self.scene = Scene()
-        self.camera = Camera(aspect_ratio=800 / 600)
-        self.camera.set_position([0, 0, 1.5])
-        vertex_shader_code = """
-            uniform mat4 projectionMatrix;
-            uniform mat4 viewMatrix;
-            uniform mat4 modelMatrix;
-            in vec3 vertexPosition;
-            in vec2 vertexUV;
-            out vec2 UV;
+        self.camera = Camera(aspect_ratio=800/600)
+        # self.rig = MovementRig()
+        # self.rig.add(self.camera)
+        self.camera.set_position([0, 1, 5])
+        self.scene.add(self.camera)
 
-            void main()
-            {
-                vec4 pos = vec4(vertexPosition, 1.0);
-                gl_Position = projectionMatrix * viewMatrix * modelMatrix * pos;
-                UV = vertexUV;
-            }
-        """
-        fragment_shader_code = """
-            // Return a random value in [0, 1]
-            float random(vec2 UV)
-            {
-                return fract(235711.0 * sin(14.337 * UV.x + 42.418 * UV.y));
-            }
+        label_texture = TextTexture(text=" This is a Crate ",
+                                    system_font_name="Arial Bold",
+                                    font_size=40,
+                                    font_color=[0, 0, 200],
+                                    image_width=256,
+                                    image_height=128,
+                                    align_horizontal=0.5,
+                                    align_vertical=0.5,
+                                    image_border_width=4,
+                                    image_border_color=[255, 0, 0])
+        label_material = TextureMaterial(label_texture)
+        label_geometry = RectangleGeometry(width=1, height=0.5)
+        label_geometry.apply_matrix(Matrix.make_rotation_y(math.pi))
+        self.label = Mesh(label_geometry, label_material)
+        self.label.set_position([0, 1, 0])
+        self.scene.add(self.label)
 
-            float boxRandom(vec2 UV, float scale)
-            {
-                vec2 iScaleUV = floor(scale * UV);
-                return random(iScaleUV);
-            }
-
-            float smoothRandom(vec2 UV, float scale)
-            {
-                vec2 iScaleUV = floor(scale * UV);
-                vec2 fScaleUV = fract(scale * UV);
-                float a = random(iScaleUV);
-                float b = random(round(iScaleUV + vec2(1, 0)));
-                float c = random(round(iScaleUV + vec2(0, 1)));
-                float d = random(round(iScaleUV + vec2(1, 1)));
-                return mix(mix(a, b, fScaleUV.x), mix(c, d, fScaleUV.x), fScaleUV.y);
-            }
-
-            // Add smooth random values at different scales
-            // weighted (amplitudes) so that sum is approximately 1.0
-            float fractalLikeRandom(vec2 UV, float scale)
-            {
-                float value = 0.0;
-                float amplitude = 0.5;
-                for (int i = 0; i < 10; i++)
-                {
-                    value += amplitude * smoothRandom(UV, scale);
-                    scale *= 2.0;
-                    amplitude *= 0.5;
-                }
-                return value;
-            }
-
-            in vec2 UV;
-            out vec4 fragColor;
-            void main()
-            {
-                // wood grain
-                float t = 80 * UV.y + 20 * fractalLikeRandom(UV, 2);
-                float r = clamp(2 * abs(sin(t)), 0, 1);
-                vec4 color1 = vec4(0.3, 0.2, 0.0, 1.0);
-                vec4 color2 = vec4(0.6, 0.4, 0.2, 1.0);
-                fragColor = mix(color1, color2, r);     
-            }
-        """
-        material = Material(vertex_shader_code, fragment_shader_code)
-        material.locate_uniforms()
-
-        geometry = RectangleGeometry()
-        mesh = Mesh(geometry, material)
-        self.scene.add(mesh)
+        crate_geometry = BoxGeometry()
+        crate_texture = Texture("images/crate.jpg")
+        crate_material = TextureMaterial(crate_texture)
+        crate = Mesh(crate_geometry, crate_material)
+        self.scene.add(crate)
 
     def paintGL(self):
         # Time update
@@ -135,7 +92,7 @@ class GLWidget(qgl.QGLWidget):
         # dt = now - self.lastTime
         # self.lastTime = now
 
-        # self.distort_material.uniform_dict["time"].data += dt
+        self.label.look_at(self.camera.global_position)
         self.renderer.render(self.scene, self.camera)
 
     def gl_settings(self):
@@ -174,13 +131,6 @@ class MainWindow(qtw.QMainWindow):
         self.statusBar.showMessage(
             "To open and close the joint: PRESS 'Open/close joint' button or DOUBLE-CLICK anywhere inside the window.")
 
-                # since we dont have events to trigger updateGL
-        # we can use time interval to do it
-        timer = qtc.QTimer(self)
-        timer.setInterval(10)  # period, in milliseconds
-        timer.timeout.connect(self.glWidget.update)
-        timer.start()
-
     def setupUi(self):
         pass
         # get opengl window size - not really needed
@@ -194,7 +144,45 @@ class MainWindow(qtw.QMainWindow):
     # Qt can access keyboard events only if any of its top level window has keyboard focus.
     # If the window is minimized or another window takes focus, you will not receive keyboard events.
     def keyPressEvent(self, e):
-        pass
+        dt = 0.05
+        move_amount = self.units_per_second * dt
+        rotate_amount = self.degrees_per_second * (math.pi / 180) * dt
+
+        key_pressed = e.text()
+        if key_pressed == "w":
+            # move_forwards
+            self.glWidget.camera.translate(0, 0, -move_amount)
+        if key_pressed == "s":
+            # move_backwards
+            self.glWidget.camera.translate(0, 0, move_amount)
+        if key_pressed == "a":
+            # move_left
+            self.glWidget.camera.translate(-move_amount, 0, 0)
+        if key_pressed == "d":
+            # move_right
+            self.glWidget.camera.translate(move_amount, 0, 0)
+        if key_pressed == "r":
+            # move_up
+            self.glWidget.camera.translate(0, move_amount, 0)
+        if key_pressed == "f":
+            # move_down
+            self.glWidget.camera.translate(0, -move_amount, 0)
+        if key_pressed == "q":
+            # turn left
+            self.glWidget.camera.rotate_y(-rotate_amount)
+        if key_pressed == "e":
+            # turn right
+            self.glWidget.camera.rotate_y(rotate_amount)
+
+        # TODO: why is the old code using _look_attachment
+        if key_pressed == "t":
+            # look up
+            self.glWidget.camera.rotate_x(rotate_amount)
+        if key_pressed == "g":
+            # look down
+            self.glWidget.camera.rotate_x(-rotate_amount)
+
+        self.glWidget.update()
     
 # deal with dpi
 qtw.QApplication.setAttribute(qtc.Qt.AA_EnableHighDpiScaling, True)     # enable high dpi scaling

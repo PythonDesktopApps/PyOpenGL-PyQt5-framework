@@ -56,7 +56,7 @@ class Texture:
         # WHAT is the equivalent of this
         # pixel_data = pygame.image.tostring(self._surface, "RGBA", True)
         pixel_data = self._surface.tobytes()
-        print("pixel data: ", pixel_data[1:10])
+        # print("pixel data: ", pixel_data[1:10])
         
         # Specify texture used by the following functions
         GL.glBindTexture(GL.GL_TEXTURE_2D, self._texture_ref)

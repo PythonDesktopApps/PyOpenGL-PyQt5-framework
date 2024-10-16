@@ -46,7 +46,7 @@ Exercise_Files/
 .vscode/
 *.sublime-project
 *.sublime-workspace
-
+*.idea
 
 # Python Specifics #
 ######################

@@ -1,7 +1,9 @@
 import OpenGL.GL as GL
-import pygame
+# import pygame
+from PIL import Image
 
 from core_ext.texture import Texture
+from PyQt5.QtGui import QPixmap
 
 
 class RenderTarget:
@@ -23,7 +25,8 @@ class RenderTarget:
                 }
             )
             self._texture.set_properties(property_dict)
-            self._texture.surface = pygame.Surface(resolution)
+            # self._texture.surface = pygame.Surface(resolution)
+            self._texture.surface = Image.new('RGBA', resolution)
             self._texture.upload_data()
         # Create a framebuffer
         self._framebuffer_ref = GL.glGenFramebuffers(1)

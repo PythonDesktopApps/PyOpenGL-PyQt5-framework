@@ -33,6 +33,7 @@ from extras.movement_rig import MovementRig
 from extras.grid import GridHelper
 
 
+
 class GLWidget(qgl.QGLWidget):
 
     def __init__(self, main_window=None, *__args):
@@ -48,6 +49,7 @@ class GLWidget(qgl.QGLWidget):
         self.setMouseTracking(True)
 
         self.lastTime = time.time()
+        self.time_elapsed = 0
 
     def initializeGL(self):
         # print gl info
@@ -63,7 +65,7 @@ class GLWidget(qgl.QGLWidget):
         self.camera.set_position([0, 0.5, 3])
         self.scene.add(self.camera)
         geometry = RectangleGeometry()
-        tile_set = Texture("../images/sonic-spritesheet.jpg")
+        tile_set = Texture("images/sonic-spritesheet.jpg")
         sprite_material = SpriteMaterial(
             tile_set,
             {
@@ -85,11 +87,14 @@ class GLWidget(qgl.QGLWidget):
 
     def paintGL(self):
         # Time update
-        # now = time.time()
-        # dt = now - self.lastTime
-        # self.lastTime = now
+        now = time.time()
+        dt = now - self.lastTime
+        
+        self.time_elapsed += dt
+        self.lastTime = now
 
-        # self.distort_material.uniform_dict["time"].data += dt
+        tile_number = math.floor(self.time_elapsed * self.tiles_per_second)
+        self.sprite.material.uniform_dict["tileNumber"].data = tile_number
         self.renderer.render(self.scene, self.camera)
 
     def gl_settings(self):
@@ -127,14 +132,7 @@ class MainWindow(qtw.QMainWindow):
         self.setStatusBar(self.statusBar)
         self.statusBar.showMessage(
             "To open and close the joint: PRESS 'Open/close joint' button or DOUBLE-CLICK anywhere inside the window.")
-
-                # since we dont have events to trigger updateGL
-        # we can use time interval to do it
-        timer = qtc.QTimer(self)
-        timer.setInterval(10)  # period, in milliseconds
-        timer.timeout.connect(self.glWidget.update)
-        timer.start()
-
+        
     def setupUi(self):
         pass
         # get opengl window size - not really needed
@@ -148,7 +146,47 @@ class MainWindow(qtw.QMainWindow):
     # Qt can access keyboard events only if any of its top level window has keyboard focus.
     # If the window is minimized or another window takes focus, you will not receive keyboard events.
     def keyPressEvent(self, e):
-        pass
+        dt = 0.05
+        units_per_second = 1
+        degrees_per_second = 60
+        move_amount = units_per_second * dt
+        rotate_amount = degrees_per_second * (math.pi / 180) * dt
+
+        key_pressed = e.text()
+        if key_pressed == "w":
+            # move_forwards
+            self.glWidget.camera.translate(0, 0, -move_amount)
+        if key_pressed == "s":
+            # move_backwards
+            self.glWidget.camera.translate(0, 0, move_amount)
+        if key_pressed == "a":
+            # move_left
+            self.glWidget.camera.translate(-move_amount, 0, 0)
+        if key_pressed == "d":
+            # move_right
+            self.glWidget.camera.translate(move_amount, 0, 0)
+        if key_pressed == "r":
+            # move_up
+            self.glWidget.camera.translate(0, move_amount, 0)
+        if key_pressed == "f":
+            # move_down
+            self.glWidget.camera.translate(0, -move_amount, 0)
+        if key_pressed == "q":
+            # turn left
+            self.glWidget.camera.rotate_y(-rotate_amount)
+        if key_pressed == "e":
+            # turn right
+            self.glWidget.camera.rotate_y(rotate_amount)
+
+        # TODO: why is the old code using _look_attachment
+        if key_pressed == "t":
+            # look up
+            self.glWidget.camera.rotate_x(rotate_amount)
+        if key_pressed == "g":
+            # look down
+            self.glWidget.camera.rotate_x(-rotate_amount)
+
+        self.glWidget.update()
     
 # deal with dpi
 qtw.QApplication.setAttribute(qtc.Qt.AA_EnableHighDpiScaling, True)     # enable high dpi scaling
