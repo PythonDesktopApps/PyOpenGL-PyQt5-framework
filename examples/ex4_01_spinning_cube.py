@@ -113,10 +113,15 @@ class MainWindow(qtw.QMainWindow):
 
         # since we dont have events to trigger updateGL
         # we can use time interval to do it
-        timer = qtc.QTimer(self)
-        timer.setInterval(10)  # period, in milliseconds
-        timer.timeout.connect(self.glWidget.update)
-        timer.start()
+        self.timer = qtc.QTimer()
+        # to achive 60fps
+        self.timer.setInterval(1000/60)  # period, in milliseconds
+        self.timer.timeout.connect(self.glWidget.update)
+        self.timer.start()
+
+        # another way to write above is
+        # self.timer.timeout.connect(self.glWidget.update)
+        # self.timer.start(1000/60)
 
     def setupUi(self):
         pass

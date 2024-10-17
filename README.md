@@ -20,3 +20,5 @@ Note that the root is added to path to easily run the examples.
 * `ex5_07`
 * `ex5_08`
 * `ex5_09`
+* `ex5_10`
+* `ex5_11`

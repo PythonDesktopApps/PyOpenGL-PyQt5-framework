@@ -98,8 +98,6 @@ class GLWidget(qgl.QGLWidget):
         self.wave_material.uniform_dict["time"].data += dt
         self.renderer.render(self.scene, self.camera)
 
-        self.update()
-
     def gl_settings(self):
         # self.qglClearColor(qtg.QColor(255, 255, 255))
         GL.glClearColor(255, 255, 255, 1)
@@ -137,10 +135,10 @@ class MainWindow(qtw.QMainWindow):
             "To open and close the joint: PRESS 'Open/close joint' button or DOUBLE-CLICK anywhere inside the window.")
 
         # specify refresh rate instead of relying on PyQt default refresh
-        # timer = qtc.QTimer(self)
-        # timer.setInterval(10)  # period, in milliseconds
-        # timer.timeout.connect(self.glWidget.update)
-        # timer.start()
+        timer = qtc.QTimer(self)
+        timer.setInterval(20)  # period, in milliseconds
+        timer.timeout.connect(self.glWidget.update)
+        timer.start()
 
     def setupUi(self):
         pass
