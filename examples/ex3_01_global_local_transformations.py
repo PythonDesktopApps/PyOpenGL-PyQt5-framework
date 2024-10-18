@@ -88,7 +88,7 @@ class GLWidget(qgl.QGLWidget):
 
     def paintGL(self):
         self.clear()
-        
+
         ### Render scene ###
         GL.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT)
         GL.glUseProgram(self.program_ref)
@@ -135,11 +135,6 @@ class MainWindow(qtw.QMainWindow):
         self.statusBar.showMessage(
             "To open and close the joint: PRESS 'Open/close joint' button or DOUBLE-CLICK anywhere inside the window.")
 
-        # timer = qtc.QTimer(self)
-        # timer.setInterval(20)  # period, in milliseconds
-        # timer.timeout.connect(self.glWidget.updateGL)
-        # timer.start()
-
     def setupUi(self):
         pass
         # get opengl window size - not really needed
@@ -155,8 +150,7 @@ class MainWindow(qtw.QMainWindow):
         
         # move_speed and turn_speed are glWidget property hence they remain there
         # however keyPress are recognized only on the mainWindow hence used here
-
-        dt = 0.05
+        dt = 1/60
         move_amount = self.glWidget.move_speed * dt
         turn_amount = self.glWidget.turn_speed * dt
 
@@ -165,12 +159,10 @@ class MainWindow(qtw.QMainWindow):
         # but acts as dot product when applied to vectors
         # global translation
         if key_pressed == 'w':
-            print(key_pressed)
             m = Matrix.make_translation(0, move_amount, 0)
             self.glWidget.model_matrix.data = m @ self.glWidget.model_matrix.data
         # why s is not working?
-        if key_pressed == 's':
-            print(key_pressed)
+        if key_pressed == 'h':
             m = Matrix.make_translation(0, -move_amount, 0)
             self.glWidget.model_matrix.data = m @ self.glWidget.model_matrix.data
         if key_pressed == 'a':

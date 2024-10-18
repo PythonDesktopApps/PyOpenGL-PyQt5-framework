@@ -15,6 +15,7 @@ Note that the root is added to path to easily run the examples.
 
 ## TODO
 
+* `ex4_06`
 * `ex4_07`
 * `ex5_03`
 * `ex5_07`

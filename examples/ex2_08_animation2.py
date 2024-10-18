@@ -92,7 +92,8 @@ class GLWidget(qgl.QGLWidget):
         # delta time is the time between cycles in the main window loop
         # time_elapsed is the time since the app is running
         now = time.time()
-        self.time_elapsed += now - self.lastTime
+        dt = now - self.lastTime
+        self.time_elapsed += dt
         self.lastTime = now
 
         self.translation.data[0] = 0.75 * math.cos(self.time_elapsed)
@@ -104,8 +105,6 @@ class GLWidget(qgl.QGLWidget):
         self.base_color.upload_data()
         GL.glDrawArrays(GL.GL_TRIANGLES, 0, self.vertex_count)
         
-        self.update()
-
     # def resizeGL(self, w, h):
     #     pass
 
@@ -145,10 +144,11 @@ class MainWindow(qtw.QMainWindow):
         self.statusBar.showMessage(
             "To open and close the joint: PRESS 'Open/close joint' button or DOUBLE-CLICK anywhere inside the window.")
 
-        # timer = qtc.QTimer(self)
-        # timer.setInterval(20)  # period, in milliseconds
-        # timer.timeout.connect(self.glWidget.updateGL)
-        # timer.start()
+        timer = qtc.QTimer(self)
+        # to achieve 60 fps
+        timer.setInterval(1000/60)
+        timer.timeout.connect(self.glWidget.update)
+        timer.start()
 
     def setupUi(self):
         pass

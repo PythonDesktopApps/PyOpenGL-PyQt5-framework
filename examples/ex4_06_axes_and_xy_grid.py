@@ -132,7 +132,7 @@ class MainWindow(qtw.QMainWindow):
     # Qt can access keyboard events only if any of its top level window has keyboard focus.
     # If the window is minimized or another window takes focus, you will not receive keyboard events.
     def keyPressEvent(self, e):
-        dt = 0.05
+        dt = 1/60
         move_amount = self.units_per_second * dt
         rotate_amount = self.degrees_per_second * (math.pi / 180) * dt
 

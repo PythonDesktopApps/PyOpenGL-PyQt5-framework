@@ -88,7 +88,8 @@ class GLWidget(qgl.QGLWidget):
         self.clear()
         
         now = time.time()
-        self.time_elapsed += now - self.lastTime
+        dt = now - self.lastTime
+        self.time_elapsed += dt
         self.lastTime = now
 
         # self.base_color.data[0] = (math.sin(3 * self.time) + 1) / 2
@@ -101,7 +102,6 @@ class GLWidget(qgl.QGLWidget):
         self.translation.upload_data()
         self.base_color.upload_data()
         GL.glDrawArrays(GL.GL_TRIANGLES, 0, self.vertex_count)
-        self.update()
 
     # def resizeGL(self, w, h):
     #     pass
@@ -142,10 +142,10 @@ class MainWindow(qtw.QMainWindow):
         self.statusBar.showMessage(
             "To open and close the joint: PRESS 'Open/close joint' button or DOUBLE-CLICK anywhere inside the window.")
 
-        # timer = qtc.QTimer(self)
-        # timer.setInterval(20)  # period, in milliseconds
-        # timer.timeout.connect(self.glWidget.updateGL)
-        # timer.start()
+        timer = qtc.QTimer(self)
+        timer.setInterval(1000/60)  # period, in milliseconds
+        timer.timeout.connect(self.glWidget.update)
+        timer.start()
 
     def setupUi(self):
         pass
