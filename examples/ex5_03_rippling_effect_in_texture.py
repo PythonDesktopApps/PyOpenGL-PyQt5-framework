@@ -88,13 +88,15 @@ class GLWidget(qgl.QGLWidget):
         self.wave_material.locate_uniforms()
 
     def paintGL(self):
-        self.clear()
+        # self.clear()
 
         # Time update
         now = time.time()
         dt = now - self.lastTime
         self.lastTime = now
-
+        
+        print(dt)
+        
         self.wave_material.uniform_dict["time"].data += dt
         self.renderer.render(self.scene, self.camera)
 
@@ -136,19 +138,12 @@ class MainWindow(qtw.QMainWindow):
 
         # specify refresh rate instead of relying on PyQt default refresh
         timer = qtc.QTimer(self)
-        timer.setInterval(20)  # period, in milliseconds
+        timer.setInterval(1000/60)  # period, in milliseconds
         timer.timeout.connect(self.glWidget.update)
         timer.start()
 
     def setupUi(self):
         pass
-        # get opengl window size - not really needed
-        # self.x_range = [10, 500]
-        # self.y_range = [10, 500]
-
-        # note that the widgets are made attribute to be reused again
-        # ---Design
-        # self.btn_open_close_joint = self.findChild(qtw.QPushButton, "btn_open_close_joint")
 
     # Qt can access keyboard events only if any of its top level window has keyboard focus.
     # If the window is minimized or another window takes focus, you will not receive keyboard events.

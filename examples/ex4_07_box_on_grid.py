@@ -29,6 +29,7 @@ from geometry.box import BoxGeometry
 from extras.axes import AxesHelper
 from extras.grid import GridHelper
 from material.surface import SurfaceMaterial
+from extras.movement_rig import MovementRig
 
 
 class GLWidget(qgl.QGLWidget):
@@ -54,15 +55,14 @@ class GLWidget(qgl.QGLWidget):
         self.renderer = Renderer(self)
         self.scene = Scene()
         self.camera = Camera(aspect_ratio=800/600)
+        self.camera.set_position([0, 1, 5])
         geometry = BoxGeometry()
         material = SurfaceMaterial(property_dict={"useVertexColors": True})
         self.mesh = Mesh(geometry, material)
-        # note that since I don't have the rig, camera is parent of the mesh
-        self.camera.add(self.mesh)
-        self.camera.set_position([0, 1, 5])
-        # the effect will be cumulative
-        # self.camera.set_position([0.5, 1, 5])
-        self.scene.add(self.camera)
+        self.rig = MovementRig()
+        self.rig.add(self.mesh)
+        self.rig.set_position([0, 0.5, 0])
+        self.scene.add(self.rig)
         axes = AxesHelper(axis_length=2)
         self.scene.add(axes)
         grid = GridHelper(
@@ -117,27 +117,13 @@ class MainWindow(qtw.QMainWindow):
         self.units_per_second = 1
         self.degrees_per_second = 60
 
-        # since we dont have events to trigger updateGL
-        # we can use time interval to do it
-        # timer = qtc.QTimer(self)
-        # timer.setInterval(10)  # period, in milliseconds
-        # timer.timeout.connect(self.glWidget.updateGL)
-        # timer.start()
-
     def setupUi(self):
         pass
-        # get opengl window size - not really needed
-        # self.x_range = [10, 500]
-        # self.y_range = [10, 500]
-
-        # note that the widgets are made attribute to be reused again
-        # ---Design
-        # self.btn_open_close_joint = self.findChild(qtw.QPushButton, "btn_open_close_joint")
 
     # Qt can access keyboard events only if any of its top level window has keyboard focus.
     # If the window is minimized or another window takes focus, you will not receive keyboard events.
     def keyPressEvent(self, e):
-        dt = 0.05
+        dt = 1/60
         move_amount = self.units_per_second * dt
         rotate_amount = self.degrees_per_second * (math.pi / 180) * dt
 
@@ -154,27 +140,26 @@ class MainWindow(qtw.QMainWindow):
 
         key_pressed = e.text()
         if key_pressed == "w":
-            self.glWidget.camera.translate(0, 0, -move_amount)
+            self.glWidget.rig.translate(0, 0, -move_amount)
         if key_pressed == "s":
-            self.glWidget.camera.translate(0, 0, move_amount)
+            self.glWidget.rig.translate(0, 0, move_amount)
         if key_pressed == "a":
-            self.glWidget.camera.translate(-move_amount, 0, 0)
+            self.glWidget.rig.translate(-move_amount, 0, 0)
         if key_pressed == "d":
-            self.glWidget.camera.translate(move_amount, 0, 0)
+            self.glWidget.rig.translate(move_amount, 0, 0)
         if key_pressed == "r":
-            self.glWidget.camera.translate(0, move_amount, 0)
+            self.glWidget.rig.translate(0, move_amount, 0)
         if key_pressed == "f":
-            self.glWidget.camera.translate(0, -move_amount, 0)
+            self.glWidget.rig.translate(0, -move_amount, 0)
         if key_pressed == "q":
-            self.glWidget.camera.rotate_y(-rotate_amount)
+            self.glWidget.rig.rotate_y(-rotate_amount)
         if key_pressed == "e":
-            self.glWidget.camera.rotate_y(rotate_amount)
+            self.glWidget.rig.rotate_y(rotate_amount)
 
-        # TODO: why is the old code using _look_attachment
         if key_pressed == "t":
-            self.glWidget.camera.rotate_x(rotate_amount)
+            self.glWidget.rig._look_attachment.rotate_x(rotate_amount)
         if key_pressed == "g":
-            self.glWidget.camera.rotate_x(-rotate_amount)
+            self.glWidget.rig._look_attachment.rotate_x(-rotate_amount)
 
         self.glWidget.update()
     
