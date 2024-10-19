@@ -22,4 +22,4 @@ Note that the root is added to path to easily run the examples.
 * `ex5_08`
 * `ex5_09` - fixed
 * `ex5_10`
-* `ex5_11`
+* `ex5_11` - fixed
