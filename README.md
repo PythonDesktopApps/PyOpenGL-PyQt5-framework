@@ -17,7 +17,7 @@ Note that the root is added to path to easily run the examples.
 
 * `ex4_06` - added movement_rig
 * `ex4_07` - added movement_rig
-* `ex5_03`
+* `ex5_03` - fixed
 * `ex5_07`
 * `ex5_08`
 * `ex5_09`

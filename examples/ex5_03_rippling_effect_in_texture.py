@@ -87,15 +87,17 @@ class GLWidget(qgl.QGLWidget):
         self.wave_material.add_uniform("float", "time", 0.0)
         self.wave_material.locate_uniforms()
 
+        geometry = RectangleGeometry()
+        self.mesh = Mesh(geometry, self.wave_material)
+        self.scene.add(self.mesh)
+
     def paintGL(self):
-        # self.clear()
+        self.clear()
 
         # Time update
         now = time.time()
         dt = now - self.lastTime
         self.lastTime = now
-        
-        print(dt)
         
         self.wave_material.uniform_dict["time"].data += dt
         self.renderer.render(self.scene, self.camera)

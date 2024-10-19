@@ -50,6 +50,8 @@ class Uniform:
             elif self._data_type == 'bool':
                 GL.glUniform1i(self._variable_ref, self._data)
             elif self._data_type == 'float':
+
+                # print(self._variable_ref)
                 GL.glUniform1f(self._variable_ref, self._data)
             elif self._data_type == 'vec2':
                 GL.glUniform2f(self._variable_ref, *self._data)
