@@ -106,8 +106,6 @@ class GLWidget(qgl.QGLWidget):
         self.distort_material.uniform_dict["time"].data += dt
         self.renderer.render(self.scene, self.camera)
 
-        self.update()
-
     def gl_settings(self):
         # self.qglClearColor(qtg.QColor(255, 255, 255))
         GL.glClearColor(255, 255, 255, 1)
@@ -143,6 +141,11 @@ class MainWindow(qtw.QMainWindow):
         self.setStatusBar(self.statusBar)
         self.statusBar.showMessage(
             "To open and close the joint: PRESS 'Open/close joint' button or DOUBLE-CLICK anywhere inside the window.")
+
+        timer = qtc.QTimer(self)
+        timer.setInterval(1000/60)  # period, in milliseconds
+        timer.timeout.connect(self.glWidget.update)
+        timer.start()
 
     def setupUi(self):
         pass

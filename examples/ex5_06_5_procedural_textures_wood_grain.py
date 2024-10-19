@@ -173,13 +173,6 @@ class MainWindow(qtw.QMainWindow):
         self.statusBar.showMessage(
             "To open and close the joint: PRESS 'Open/close joint' button or DOUBLE-CLICK anywhere inside the window.")
 
-                # since we dont have events to trigger updateGL
-        # we can use time interval to do it
-        timer = qtc.QTimer(self)
-        timer.setInterval(10)  # period, in milliseconds
-        timer.timeout.connect(self.glWidget.update)
-        timer.start()
-
     def setupUi(self):
         pass
         # get opengl window size - not really needed
