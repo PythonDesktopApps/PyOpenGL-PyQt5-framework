@@ -31,7 +31,7 @@ from geometry.sphere import SphereGeometry
 from material.texture import TextureMaterial
 from extras.movement_rig import MovementRig
 from extras.postprocessor import Postprocessor
-from effects.invert import InvertEffect
+from effects.pixelate import PixelateEffect
 
 
 class GLWidget(qgl.QGLWidget):
@@ -86,7 +86,7 @@ class GLWidget(qgl.QGLWidget):
         self.scene.add(self.sphere)
 
         self.postprocessor = Postprocessor(self.renderer, self.scene, self.camera)
-        self.postprocessor.add_effect(InvertEffect())
+        self.postprocessor.add_effect(PixelateEffect())
 
 
     def paintGL(self):
