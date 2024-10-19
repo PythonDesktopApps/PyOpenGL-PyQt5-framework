@@ -33,7 +33,12 @@ class TextTexture(Texture):
             font = qtg.QFont(font_str, font_size)
             # font = pygame.font.Font(font_file_name, font_size)
         # Render text to (antialiased) surface
-        font_surface = font.render(text, True, font_color)
+        font_surface = qtw.QLabel(text)
+        # TODO set antialiasing
+        font_surface.setFont(font)
+        font_surface.setStyleSheet("color: " + font_color)
+        # font_surface = font.render(text, True, font_color)
+
         # Determine size of rendered text for alignment purposes
         (text_width, text_height) = font.size(text)
         # If image dimensions are not specified,

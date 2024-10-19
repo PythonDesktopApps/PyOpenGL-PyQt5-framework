@@ -54,80 +54,22 @@ class GLWidget(qgl.QGLWidget):
 
         self.renderer = Renderer(self)
         self.scene = Scene()
-        self.camera = Camera(aspect_ratio=800 / 600)
+        self.camera = Camera(aspect_ratio=800/600)
         self.camera.set_position([0, 0, 1.5])
-        vertex_shader_code = """
-            uniform mat4 projectionMatrix;
-            uniform mat4 viewMatrix;
-            uniform mat4 modelMatrix;
-            in vec3 vertexPosition;
-            in vec2 vertexUV;
-            out vec2 UV;
-
-            void main()
-            {
-                vec4 pos = vec4(vertexPosition, 1.0);
-                gl_Position = projectionMatrix * viewMatrix * modelMatrix * pos;
-                UV = vertexUV;
-            }
-        """
-        fragment_shader_code = """
-            // Return a random value in [0, 1]
-            float random(vec2 UV)
-            {
-                return fract(235711.0 * sin(14.337 * UV.x + 42.418 * UV.y));
-            }
-
-            float boxRandom(vec2 UV, float scale)
-            {
-                vec2 iScaleUV = floor(scale * UV);
-                return random(iScaleUV);
-            }
-
-            float smoothRandom(vec2 UV, float scale)
-            {
-                vec2 iScaleUV = floor(scale * UV);
-                vec2 fScaleUV = fract(scale * UV);
-                float a = random(iScaleUV);
-                float b = random(round(iScaleUV + vec2(1, 0)));
-                float c = random(round(iScaleUV + vec2(0, 1)));
-                float d = random(round(iScaleUV + vec2(1, 1)));
-                return mix(mix(a, b, fScaleUV.x), mix(c, d, fScaleUV.x), fScaleUV.y);
-            }
-
-            // Add smooth random values at different scales
-            // weighted (amplitudes) so that sum is approximately 1.0
-            float fractalLikeRandom(vec2 UV, float scale)
-            {
-                float value = 0.0;
-                float amplitude = 0.5;
-                for (int i = 0; i < 10; i++)
-                {
-                    value += amplitude * smoothRandom(UV, scale);
-                    scale *= 2.0;
-                    amplitude *= 0.5;
-                }
-                return value;
-            }
-
-            in vec2 UV;
-            out vec4 fragColor;
-            void main()
-            {
-                // wood grain
-                float t = 80 * UV.y + 20 * fractalLikeRandom(UV, 2);
-                float r = clamp(2 * abs(sin(t)), 0, 1);
-                vec4 color1 = vec4(0.3, 0.2, 0.0, 1.0);
-                vec4 color2 = vec4(0.6, 0.4, 0.2, 1.0);
-                fragColor = mix(color1, color2, r);     
-            }
-        """
-        material = Material(vertex_shader_code, fragment_shader_code)
-        material.locate_uniforms()
-
         geometry = RectangleGeometry()
-        mesh = Mesh(geometry, material)
-        self.scene.add(mesh)
+        message = TextTexture(text="Python Graphics",
+                              system_font_name="Impact",
+                              font_size=32,
+                              font_color=[0, 0, 200],
+                              image_width=256,
+                              image_height=256,
+                              align_horizontal=0.5,
+                              align_vertical=0.5,
+                              image_border_width=4,
+                              image_border_color=[255, 0, 0])
+        material = TextureMaterial(message)
+        self.mesh = Mesh(geometry, material)
+        self.scene.add(self.mesh)
 
     def paintGL(self):
         # Time update
@@ -136,7 +78,10 @@ class GLWidget(qgl.QGLWidget):
         # self.lastTime = now
 
         # self.distort_material.uniform_dict["time"].data += dt
+        self.mesh.rotate_y(0.0114)
+        self.mesh.rotate_x(0.0237)
         self.renderer.render(self.scene, self.camera)
+
 
     def gl_settings(self):
         # self.qglClearColor(qtg.QColor(255, 255, 255))
@@ -174,12 +119,12 @@ class MainWindow(qtw.QMainWindow):
         self.statusBar.showMessage(
             "To open and close the joint: PRESS 'Open/close joint' button or DOUBLE-CLICK anywhere inside the window.")
 
-                # since we dont have events to trigger updateGL
+        # since we dont have events to trigger updateGL
         # we can use time interval to do it
-        timer = qtc.QTimer(self)
-        timer.setInterval(10)  # period, in milliseconds
-        timer.timeout.connect(self.glWidget.update)
-        timer.start()
+        # timer = qtc.QTimer(self)
+        # timer.setInterval(1000/60)  # period, in milliseconds
+        # timer.timeout.connect(self.glWidget.update)
+        # timer.start()
 
     def setupUi(self):
         pass
