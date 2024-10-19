@@ -33,7 +33,6 @@ from extras.movement_rig import MovementRig
 from extras.grid import GridHelper
 
 
-
 class GLWidget(qgl.QGLWidget):
 
     def __init__(self, main_window=None, *__args):
@@ -50,6 +49,7 @@ class GLWidget(qgl.QGLWidget):
 
         self.lastTime = time.time()
         self.time_elapsed = 0
+        self.dt = 0
 
     def initializeGL(self):
         # print gl info
@@ -60,10 +60,10 @@ class GLWidget(qgl.QGLWidget):
         self.renderer = Renderer(self)
         self.scene = Scene()
         self.camera = Camera(aspect_ratio=800/600)
-        # self.rig = MovementRig()
-        # self.rig.add(self.camera)
-        self.camera.set_position([0, 0.5, 3])
-        self.scene.add(self.camera)
+        self.rig = MovementRig()
+        self.rig.add(self.camera)
+        self.rig.set_position([0, 0.5, 3])
+        self.scene.add(self.rig)
         geometry = RectangleGeometry()
         tile_set = Texture("images/sonic-spritesheet.jpg")
         sprite_material = SpriteMaterial(
@@ -85,12 +85,13 @@ class GLWidget(qgl.QGLWidget):
         grid.rotate_x(-math.pi / 2)
         self.scene.add(grid)
 
+
     def paintGL(self):
         # Time update
         now = time.time()
-        dt = now - self.lastTime
+        self.dt = now - self.lastTime
         
-        self.time_elapsed += dt
+        self.time_elapsed += self.dt
         self.lastTime = now
 
         tile_number = math.floor(self.time_elapsed * self.tiles_per_second)
@@ -133,58 +134,47 @@ class MainWindow(qtw.QMainWindow):
         self.statusBar.showMessage(
             "To open and close the joint: PRESS 'Open/close joint' button or DOUBLE-CLICK anywhere inside the window.")
         
+        self.units_per_second = 1
+        self.degrees_per_second = 60
+
+        # in this example, glWidget is updated by timer as well as the keyboard
+        timer = qtc.QTimer(self)
+        timer.setInterval(1000/60)  # period, in milliseconds
+        timer.timeout.connect(self.glWidget.update)
+        timer.start()
+
     def setupUi(self):
         pass
-        # get opengl window size - not really needed
-        # self.x_range = [10, 500]
-        # self.y_range = [10, 500]
-
-        # note that the widgets are made attribute to be reused again
-        # ---Design
-        # self.btn_open_close_joint = self.findChild(qtw.QPushButton, "btn_open_close_joint")
 
     # Qt can access keyboard events only if any of its top level window has keyboard focus.
     # If the window is minimized or another window takes focus, you will not receive keyboard events.
     def keyPressEvent(self, e):
-        dt = 0.05
-        units_per_second = 1
-        degrees_per_second = 60
-        move_amount = units_per_second * dt
-        rotate_amount = degrees_per_second * (math.pi / 180) * dt
+        move_amount = self.units_per_second * self.glWidget.dt
+        rotate_amount = self.degrees_per_second * (math.pi / 180) * self.glWidget.dt
 
         key_pressed = e.text()
-        if key_pressed == "w":
-            # move_forwards
-            self.glWidget.camera.translate(0, 0, -move_amount)
-        if key_pressed == "s":
-            # move_backwards
-            self.glWidget.camera.translate(0, 0, move_amount)
-        if key_pressed == "a":
-            # move_left
-            self.glWidget.camera.translate(-move_amount, 0, 0)
-        if key_pressed == "d":
-            # move_right
-            self.glWidget.camera.translate(move_amount, 0, 0)
-        if key_pressed == "r":
-            # move_up
-            self.glWidget.camera.translate(0, move_amount, 0)
-        if key_pressed == "f":
-            # move_down
-            self.glWidget.camera.translate(0, -move_amount, 0)
-        if key_pressed == "q":
-            # turn left
-            self.glWidget.camera.rotate_y(-rotate_amount)
-        if key_pressed == "e":
-            # turn right
-            self.glWidget.camera.rotate_y(rotate_amount)
+        if key_pressed == "w": # move_forwards
+            self.glWidget.rig.translate(0, 0, -move_amount)
+        if key_pressed == "s": # move_backwards
+            self.glWidget.rig.translate(0, 0, move_amount)
+        if key_pressed == "a": # move_left
+            self.glWidget.rig.translate(-move_amount, 0, 0)
+        if key_pressed == "d": # move_right
+            self.glWidget.rig.translate(move_amount, 0, 0)
+        if key_pressed == "r": # move_up
+            self.glWidget.rig.translate(0, move_amount, 0)
+        if key_pressed == "f": # move_down
+            self.glWidget.rig.translate(0, -move_amount, 0)
+        if key_pressed == "q": # turn_left
+            self.glWidget.rig.rotate_y(-rotate_amount)
+        if key_pressed == "e": # turn_right
+            self.glWidget.rig.rotate_y(rotate_amount)
 
-        # TODO: why is the old code using _look_attachment
-        if key_pressed == "t":
-            # look up
-            self.glWidget.camera.rotate_x(rotate_amount)
-        if key_pressed == "g":
-            # look down
-            self.glWidget.camera.rotate_x(-rotate_amount)
+        # basically, we are moving the child node here
+        if key_pressed == "t": # look_up
+            self.glWidget.rig._look_attachment.rotate_x(rotate_amount)
+        if key_pressed == "g": # look_down
+            self.glWidget.rig._look_attachment.rotate_x(-rotate_amount)
 
         self.glWidget.update()
     

@@ -96,14 +96,6 @@ class MainWindow(qtw.QMainWindow):
 
     def setupUi(self):
         pass
-        # get opengl window size - not really needed
-        # self.x_range = [10, 500]
-        # self.y_range = [10, 500]
-
-        # note that the widgets are made attribute to be reused again
-        # ---Design
-        # self.btn_open_close_joint = self.findChild(qtw.QPushButton, "btn_open_close_joint")
-
     
     def keyPressEvent(self, e):
         # Space key not recognize - research more

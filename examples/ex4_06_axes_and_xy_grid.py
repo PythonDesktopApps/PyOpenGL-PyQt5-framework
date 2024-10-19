@@ -120,39 +120,28 @@ class MainWindow(qtw.QMainWindow):
         move_amount = self.units_per_second * dt
         rotate_amount = self.degrees_per_second * (math.pi / 180) * dt
 
-        # move_forwards: "w",
-        # move_backwards: "s",
-        # move_left: "a",
-        # move_right: "d",
-        # move_up: "r",
-        # move_down: "f",
-        # turn_left: "q",
-        # turn_right: "e",
-        # look_up: "t",
-        # look_down: "g"
-
         key_pressed = e.text()
-        if key_pressed == "w":
+        if key_pressed == "w": # move_forwards
             self.glWidget.rig.translate(0, 0, -move_amount)
-        if key_pressed == "s":
+        if key_pressed == "s": # move_backwards
             self.glWidget.rig.translate(0, 0, move_amount)
-        if key_pressed == "a":
+        if key_pressed == "a": # move_left
             self.glWidget.rig.translate(-move_amount, 0, 0)
-        if key_pressed == "d":
+        if key_pressed == "d": # move_right
             self.glWidget.rig.translate(move_amount, 0, 0)
-        if key_pressed == "r":
+        if key_pressed == "r": # move_up
             self.glWidget.rig.translate(0, move_amount, 0)
-        if key_pressed == "f":
+        if key_pressed == "f": # move_down
             self.glWidget.rig.translate(0, -move_amount, 0)
-        if key_pressed == "q":
+        if key_pressed == "q": # turn_left
             self.glWidget.rig.rotate_y(-rotate_amount)
-        if key_pressed == "e":
+        if key_pressed == "e": # turn_right
             self.glWidget.rig.rotate_y(rotate_amount)
 
         # basically, we are moving the child node here
-        if key_pressed == "t":
+        if key_pressed == "t": # look_up
             self.glWidget.rig._look_attachment.rotate_x(rotate_amount)
-        if key_pressed == "g":
+        if key_pressed == "g": # look_down
             self.glWidget.rig._look_attachment.rotate_x(-rotate_amount)
 
         self.glWidget.update()

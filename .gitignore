@@ -54,3 +54,5 @@ env
 venv
 *.pyc
 __pycache__
+test.py
+Data/
