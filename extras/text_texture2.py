@@ -1,3 +1,6 @@
+# adapted from
+# https://api.arcade.academy/en/latest/_modules/arcade/text_pillow.html#create_text_image
+
 from PIL import Image, ImageDraw, ImageFont
 
 import pyglet.font as pfont
