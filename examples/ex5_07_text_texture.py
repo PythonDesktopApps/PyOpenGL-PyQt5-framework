@@ -26,7 +26,7 @@ from core_ext.mesh import Mesh
 from core_ext.renderer import Renderer
 from core_ext.scene import Scene
 from geometry.rectangle import RectangleGeometry
-from extras.text_texture import TextTexture
+from extras.text_texture2 import TextTexture
 from material.texture import TextureMaterial
 
 
@@ -34,11 +34,12 @@ class GLWidget(qgl.QGLWidget):
 
     def __init__(self, main_window=None, *__args):
         # commennt for now, focus first on refactoring the actual code
-        fmt = qgl.QGLFormat()
-        fmt.setVersion(3, 3)
-        fmt.setProfile(qgl.QGLFormat.CoreProfile)
-        fmt.setSampleBuffers(True)
-        super().__init__(fmt, main_window, *__args)
+        # fmt = qgl.QGLFormat()
+        # fmt.setVersion(3, 3)
+        # fmt.setProfile(qgl.QGLFormat.CoreProfile)
+        # fmt.setSampleBuffers(True)
+        # super().__init__(fmt, main_window, *__args)
+        super().__init__(main_window, *__args)
 
         self.parent = main_window
         # self.setMinimumSize(800, 800)
@@ -58,15 +59,15 @@ class GLWidget(qgl.QGLWidget):
         self.camera.set_position([0, 0, 1.5])
         geometry = RectangleGeometry()
         message = TextTexture(text="Python Graphics",
-                              system_font_name="Impact",
+                              font_name="arial",
                               font_size=32,
-                              font_color=[0, 0, 200],
-                              image_width=256,
-                              image_height=256,
-                              align_horizontal=0.5,
-                              align_vertical=0.5,
-                              image_border_width=4,
-                              image_border_color=[255, 0, 0])
+                              text_color=[0, 0, 200],
+                              width=256,
+                              height=256,
+                              h_align="center",
+                              v_align="middle",
+                              )
+        
         material = TextureMaterial(message)
         self.mesh = Mesh(geometry, material)
         self.scene.add(self.mesh)
@@ -123,10 +124,10 @@ class MainWindow(qtw.QMainWindow):
 
         # since we dont have events to trigger updateGL
         # we can use time interval to do it
-        # timer = qtc.QTimer(self)
-        # timer.setInterval(1000/60)  # period, in milliseconds
-        # timer.timeout.connect(self.glWidget.update)
-        # timer.start()
+        timer = qtc.QTimer(self)
+        timer.setInterval(17)  # period, in milliseconds
+        timer.timeout.connect(self.glWidget.update)
+        timer.start()
 
     def setupUi(self):
         pass
