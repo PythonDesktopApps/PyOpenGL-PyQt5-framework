@@ -26,7 +26,9 @@ from core_ext.mesh import Mesh
 from core_ext.renderer import Renderer
 from core_ext.scene import Scene
 from core_ext.texture import Texture
+from extras.directional_light import DirectionalLightHelper
 from extras.movement_rig import MovementRig
+from extras.point_light import PointLightHelper
 from geometry.sphere import SphereGeometry
 from light.ambient import AmbientLight
 from light.directional import DirectionalLight
@@ -68,66 +70,50 @@ class GLWidget(qgl.QGLWidget):
         self.rig.set_position([0, 0, 6])
         self.scene.add(self.rig)
 
-        # four light sources
+        # three light sources
         ambient_light = AmbientLight(color=[0.1, 0.1, 0.1])
         self.scene.add(ambient_light)
-        directional_light = DirectionalLight(color=[0.8, 0.8, 0.8], direction=[-1, -1, -2])
-        self.scene.add(directional_light)
-        point_light1 = PointLight(color=[0.9, 0, 0], position=[4, 0, 0])
-        self.scene.add(point_light1)
-        point_light2 = PointLight(color=[0, 0.9, 0], position=[-4, 0, 0])
-        self.scene.add(point_light2)
+        self.directional_light = DirectionalLight(color=[0.8, 0.8, 0.8], direction=[-1, -1, 0])
+        self.scene.add(self.directional_light)
+        self.point_light = PointLight(color=[0.9, 0, 0], position=[1, 1, 0.8])
+        self.scene.add(self.point_light)
 
         # lighted materials with a color
         flat_material = FlatMaterial(
             property_dict={"baseColor": [0.2, 0.5, 0.5]},
-            number_of_light_sources=4
+            number_of_light_sources=3
         )
         lambert_material = LambertMaterial(
             property_dict={"baseColor": [0.2, 0.5, 0.5]},
-            number_of_light_sources=4
+            number_of_light_sources=3
         )
         phong_material = PhongMaterial(
             property_dict={"baseColor": [0.2, 0.5, 0.5]},
-            number_of_light_sources=4
+            number_of_light_sources=3
         )
 
         # lighted spheres with a color
         sphere_geometry = SphereGeometry()
-        sphere_left_top = Mesh(sphere_geometry, flat_material)
-        sphere_left_top.set_position([-2.5, 1.5, 0])
-        self.scene.add(sphere_left_top)
-        sphere_center_top = Mesh(sphere_geometry, lambert_material)
-        sphere_center_top.set_position([0, 1.5, 0])
-        self.scene.add(sphere_center_top)
-        sphere_right_top = Mesh(sphere_geometry, phong_material)
-        sphere_right_top.set_position([2.5, 1.5, 0])
-        self.scene.add(sphere_right_top)
+        sphere_left = Mesh(sphere_geometry, flat_material)
+        sphere_left.set_position([-2.5, 0, 0])
+        self.scene.add(sphere_left)
+        sphere_center = Mesh(sphere_geometry, lambert_material)
+        sphere_center.set_position([0, 0, 0])
+        self.scene.add(sphere_center)
+        sphere_right = Mesh(sphere_geometry, phong_material)
+        sphere_right.set_position([2.5, 0, 0])
+        self.scene.add(sphere_right)
 
-        # lighted materials with a texture
-        textured_flat_material = FlatMaterial(
-            texture=Texture("images/grid.jpg"),
-            number_of_light_sources=4
-        )
-        textured_lambert_material = LambertMaterial(
-            texture=Texture("images/grid.jpg"),
-            number_of_light_sources=4
-        )
-        textured_phong_material = PhongMaterial(
-            texture=Texture("images/grid.jpg"),
-            number_of_light_sources=4
-        )
-
-        # lighted spheres with a texture
-        sphere_left_bottom = Mesh(sphere_geometry, textured_flat_material)
-        sphere_left_bottom.set_position([-2.5, -1.5, 0])
-        self.scene.add(sphere_left_bottom)
-        sphere_center_bottom = Mesh(sphere_geometry, textured_lambert_material)
-        sphere_center_bottom.set_position([0, -1.5, 0])
-        self.scene.add(sphere_center_bottom)
-        sphere_right_bottom = Mesh(sphere_geometry, textured_phong_material)
-        sphere_right_bottom.set_position([2.5, -1.5, 0])
-        self.scene.add(sphere_right_bottom)
+        # helpers
+        directional_light_helper = DirectionalLightHelper(self.directional_light)
+        # The directional light can take any position because it covers all the space.
+        # The directional light helper is a child of the directional light.
+        # So changing the global matrix of the parent leads to changing
+        # the global matrix of its child.
+        self.directional_light.set_position([0, 2, 0])
+        self.directional_light.add(directional_light_helper)
+        point_light_helper = PointLightHelper(self.point_light)
+        self.point_light.add(point_light_helper)
 
     def paintGL(self):
         # time update
@@ -136,6 +122,8 @@ class GLWidget(qgl.QGLWidget):
         self.time_elapsed += self.dt
         self.lastTime = now
 
+        self.directional_light.set_direction([-1, math.sin(0.5 * self.time_elapsed), 0])
+        self.point_light.set_position([1, math.sin(self.time_elapsed), 1])
         self.renderer.render(self.scene, self.camera)
 
     def gl_settings(self):
