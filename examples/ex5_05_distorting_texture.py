@@ -98,6 +98,8 @@ class GLWidget(qgl.QGLWidget):
         self.scene.add(self.mesh)
 
     def paintGL(self):
+        self.clear()
+        
         # Time update
         now = time.time()
         dt = now - self.lastTime

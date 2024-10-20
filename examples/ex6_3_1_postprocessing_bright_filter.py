@@ -89,6 +89,8 @@ class GLWidget(qgl.QGLWidget):
         self.postprocessor.add_effect(BrightFilterEffect())
 
     def paintGL(self):
+        self.clear()
+        
         # time update
         now = time.time()
         self.dt = now - self.lastTime

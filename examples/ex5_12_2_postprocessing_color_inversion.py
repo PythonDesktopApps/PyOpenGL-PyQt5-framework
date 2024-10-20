@@ -90,6 +90,8 @@ class GLWidget(qgl.QGLWidget):
 
 
     def paintGL(self):
+        self.clear()
+        
         self.sphere.rotate_y(0.01337)
         self.postprocessor.render()
 

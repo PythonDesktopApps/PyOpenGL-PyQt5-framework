@@ -73,6 +73,8 @@ class GLWidget(qgl.QGLWidget):
         self.scene.add(grass)
 
     def paintGL(self):
+        self.clear()
+        
         # since the update for this is not triggered by some external event (e.i mouseclick)
         # then we trigger the updateGL in the mainWindow
         self.renderer.render(self.scene, self.camera)

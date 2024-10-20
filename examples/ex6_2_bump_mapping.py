@@ -94,6 +94,8 @@ class GLWidget(qgl.QGLWidget):
         self.point_light.add(point_light_helper)
 
     def paintGL(self):
+        self.clear()
+        
         # time update
         now = time.time()
         self.dt = now - self.lastTime

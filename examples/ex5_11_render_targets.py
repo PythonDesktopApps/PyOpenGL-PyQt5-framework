@@ -105,6 +105,8 @@ class GLWidget(qgl.QGLWidget):
         self.scene.add(self.sky_camera)
 
     def paintGL(self):
+        self.clear()
+        
         # though the rotate does not depend on delta_time
         # we need to trigger update at the standard fps to show that the sphere is rotating
         self.sphere.rotate_y(0.01337)

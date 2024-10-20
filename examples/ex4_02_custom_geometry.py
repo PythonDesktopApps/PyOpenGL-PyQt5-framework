@@ -70,6 +70,8 @@ class GLWidget(qgl.QGLWidget):
         self.scene.add(self.mesh)
 
     def paintGL(self):
+        self.clear()
+        
         self.renderer.render(self.scene, self.camera)
 
     def gl_settings(self):

@@ -87,6 +87,8 @@ class GLWidget(qgl.QGLWidget):
         self.scene.add(crate)
 
     def paintGL(self):
+        self.clear()
+        
         # Time update
         # now = time.time()
         # dt = now - self.lastTime

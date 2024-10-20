@@ -67,6 +67,8 @@ class GLWidget(qgl.QGLWidget):
         self.scene.add(self.mesh)
 
     def paintGL(self):
+        self.clear()
+        
         self.mesh.rotate_y(0.02514)
         self.mesh.rotate_x(0.01337)
         self.renderer.render(self.scene, self.camera)

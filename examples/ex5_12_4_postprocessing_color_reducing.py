@@ -89,6 +89,8 @@ class GLWidget(qgl.QGLWidget):
         self.postprocessor.add_effect(ColorReduceEffect())
 
     def paintGL(self):
+        self.clear()
+        
         self.sphere.rotate_y(0.01337)
         self.postprocessor.render()
 

@@ -93,6 +93,8 @@ class GLWidget(qgl.QGLWidget):
         self.postprocessor.add_effect(PixelateEffect(resolution=[800, 600]))
 
     def paintGL(self):
+        self.clear()
+        
         self.sphere.rotate_y(0.01337)
         self.postprocessor.render()
 

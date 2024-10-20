@@ -82,6 +82,8 @@ class GLWidget(qgl.QGLWidget):
 
 
     def paintGL(self):
+        self.clear()
+        
         # since the update for this is not triggered by some external event (e.i mouseclick)
         # then we trigger the updateGL in the mainWindow
         self.mesh.rotate_y(0.00514)

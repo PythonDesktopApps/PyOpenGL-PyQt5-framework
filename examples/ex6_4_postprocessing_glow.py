@@ -115,6 +115,8 @@ class GLWidget(qgl.QGLWidget):
         )
 
     def paintGL(self):
+        self.clear()
+        
         # time update
         now = time.time()
         self.dt = now - self.lastTime

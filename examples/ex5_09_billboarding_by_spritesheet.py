@@ -87,6 +87,8 @@ class GLWidget(qgl.QGLWidget):
 
 
     def paintGL(self):
+        self.clear()
+        
         # Time update
         now = time.time()
         self.dt = now - self.lastTime
@@ -139,7 +141,8 @@ class MainWindow(qtw.QMainWindow):
 
         # in this example, glWidget is updated by timer as well as the keyboard
         timer = qtc.QTimer(self)
-        timer.setInterval(1000/60)  # period, in milliseconds
+        # timer.setInterval(1000/60)  # period, in milliseconds
+        timer.setInterval(17)  # round to nearest seconds for mac
         timer.timeout.connect(self.glWidget.update)
         timer.start()
 
