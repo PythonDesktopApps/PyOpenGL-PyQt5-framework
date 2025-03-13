@@ -25,12 +25,12 @@ from core.utils import Utils
 class GLWidget(qgl.QGLWidget):
 
     def __init__(self, main_window=None, *__args):
-        # commennt for now, focus first on refactoring the actual code
-        fmt = qgl.QGLFormat()
-        fmt.setVersion(3, 3)
-        fmt.setProfile(qgl.QGLFormat.CoreProfile)
-        fmt.setSampleBuffers(True)
-        super().__init__(fmt, main_window, *__args)
+        fmt = Utils.get_gl_format()
+
+        if fmt:
+            super().__init__(fmt, main_window, *__args)
+        else:
+            super().__init__(main_window, *__args)
 
         self.parent = main_window
         # self.setMinimumSize(800, 800)
@@ -62,10 +62,6 @@ class GLWidget(qgl.QGLWidget):
         # GL.glEnable(GL.GL_CULL_FACE)
 
     def clear(self):
-        # Clearing the screen (color like Qt window)
-        # GL.glClearColor(0.94117647058, 0.94117647058, 0.94117647058, 1.0)
-        # color it white for better visibility
-        GL.glClearColor(255, 255, 255, 1)
         GL.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT)
         
 class MainWindow(qtw.QMainWindow):

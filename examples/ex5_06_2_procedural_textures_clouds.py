@@ -32,12 +32,12 @@ from material.material import Material
 class GLWidget(qgl.QGLWidget):
 
     def __init__(self, main_window=None, *__args):
-        # commennt for now, focus first on refactoring the actual code
-        fmt = qgl.QGLFormat()
-        fmt.setVersion(3, 3)
-        fmt.setProfile(qgl.QGLFormat.CoreProfile)
-        fmt.setSampleBuffers(True)
-        super().__init__(fmt, main_window, *__args)
+        fmt = Utils.get_gl_format()
+
+        if fmt:
+            super().__init__(fmt, main_window, *__args)
+        else:
+            super().__init__(main_window, *__args)
 
         self.parent = main_window
         # self.setMinimumSize(800, 800)

@@ -38,7 +38,7 @@ from extras.movement_rig import MovementRig
 class GLWidget(qgl.QGLWidget):
 
     def __init__(self, main_window=None, *__args):
-        fmt = Utils.is_macos_intel()
+        fmt = Utils.get_gl_format()
 
         if fmt:
             super().__init__(fmt, main_window, *__args)
