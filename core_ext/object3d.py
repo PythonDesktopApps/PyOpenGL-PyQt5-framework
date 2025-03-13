@@ -146,9 +146,11 @@ class Object3D:
 
     def set_direction(self, direction):
         position = self.local_position
+
         target_position = [
             position[0] + direction[0],
             position[1] + direction[1],
             position[2] + direction[2]
         ]
+        print("target:", target_position)
         self.look_at(target_position)

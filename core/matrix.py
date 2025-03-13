@@ -91,6 +91,8 @@ class Matrix:
 
     @staticmethod
     def make_look_at(position, target):
+        print("position2:", position)
+        print("target2:", target)
         world_up = [0, 1, 0]
         forward = np.subtract(target, position)
         right = np.cross(forward, world_up)
