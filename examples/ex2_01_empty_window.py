@@ -1,6 +1,7 @@
 import time
 import sys
 from pathlib import Path
+from platform import system, machine
 
 import numpy as np
 import PyQt5.QtWidgets as qtw

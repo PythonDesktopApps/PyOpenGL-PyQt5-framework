@@ -36,11 +36,12 @@ class TextTexture(Texture):
         font_surface = qtw.QLabel(text)
         # TODO set antialiasing
         font_surface.setFont(font)
-        font_surface.setStyleSheet("color: " + font_color)
+        font_surface.setStyleSheet("color: " + str(font_color))
         # font_surface = font.render(text, True, font_color)
 
         # Determine size of rendered text for alignment purposes
-        (text_width, text_height) = font.size(text)
+        fm = qtg.QFontMetrics(font)
+        (text_width, text_height) = fm.width(text), fm.height()
         # If image dimensions are not specified,
         # use the font surface size as default
         if image_width is None:
@@ -51,26 +52,42 @@ class TextTexture(Texture):
         # (with the transparency channel by default)
         # self._surface = pygame.Surface((image_width, image_height),
         #                                pygame.SRCALPHA)
-        self._surface = Image.new('RGBA', (image_width, image_height))
 
-        # Set a background color used when not transparent
-        if not transparent:
-            self._surface.fill(background_color)
-        # Attributes align_horizontal, align_vertical define percentages,
-        # measured from top-left corner
-        corner_point = (align_horizontal * (image_width - text_width),
-                        align_vertical * (image_height - text_height))
-        destination_rectangle = font_surface.get_rect(topleft=corner_point)
-        # Add border (optionally)
+        # Create a surface to store the image of text with transparency channel
+        self._surface = Image.new('RGBA', (image_width, image_height), 
+                                 (0, 0, 0, 0) if transparent else background_color)
+
+        # Create a QPixmap to render the text
+        pixmap = qtg.QPixmap(image_width, image_height)
+        # Make it transparent if needed
+        pixmap.fill(qtg.QColor(0, 0, 0, 0) if transparent else qtg.QColor(*background_color))
+
+        # Create a painter to draw on the pixmap
+        painter = qtg.QPainter(pixmap)
+        painter.setFont(font)
+        painter.setPen(qtg.QColor(*font_color))
+
+        # Calculate position for text based on alignment
+        x_pos = int(align_horizontal * (image_width - text_width))
+        y_pos = int(align_vertical * (image_height - text_height) + fm.ascent())  # Add ascent for proper vertical alignment
+
+        # Draw the text
+        painter.drawText(x_pos, y_pos, text)
+
+        # Add border if needed
         if image_border_width > 0:
-            # TODO - to edit
-            im = self._surface
-            data = self._surface.tobytes("raw", "BGRA")
-            qim = qtg.QImage(data, im.width, im.height, qtg.QImage.Format_ARGB32)
-            pixmap = qtg.QPixmap.fromImage(qim)
-            qtw.QLabel(pixmap)
-            # pygame.draw.rect(self._surface, image_border_color,
-            #                  [0, 0, image_width, image_height], image_border_width)
-        # Apply font_surface to a correct position on the final surface
-        self._surface.blit(font_surface, destination_rectangle)
+            painter.setPen(qtg.QPen(qtg.QColor(*image_border_color), image_border_width))
+            painter.drawRect(0, 0, image_width-1, image_height-1)
+
+        painter.end()
+
+        # Convert QPixmap to PIL Image
+        qimage = pixmap.toImage().convertToFormat(qtg.QImage.Format_RGBA8888)
+        ptr = qimage.bits()
+        ptr.setsize(qimage.byteCount())
+        self._surface = Image.frombuffer('RGBA', (qimage.width(), qimage.height()), 
+                                        bytes(ptr), 'raw', 'RGBA', 0, 1)
+
+        # No need for blit since we've already drawn the text on the pixmap
         self.upload_data()
+        
